@@ -5,8 +5,38 @@ mod max {
 
     #[test]
     fn get_max_point() {
-        let points: PointDistribution = vec![[3.0, 1.9], [8.0, 0.4], [4.0, 4.5], [4.0, 0.0]].into();
-        assert_eq!(points.get_max_point(), 1);
+        assert_eq!(
+            PointDistribution(vec![[3.0, 1.9], [8.0, 0.4], [4.0, 4.5], [4.0, 0.0]]).get_max_point(),
+            1
+        );
+        assert_eq!(
+            PointDistribution(vec![[0.0, 0.0], [0.0, 0.0]]).get_max_point(),
+            0
+        );
+        assert_eq!(
+            PointDistribution(vec![[1.0, 0.0], [0.0, 0.0]]).get_max_point(),
+            0
+        );
+        assert_eq!(
+            PointDistribution(vec![[0.0, 0.1], [0.0, 0.0]]).get_max_point(),
+            0
+        );
+        assert_eq!(
+            PointDistribution(vec![[0.0, 0.1], [0.0, 0.2]]).get_max_point(),
+            1
+        );
+        assert_eq!(
+            PointDistribution(vec![[1.0, 0.1], [1.0, 0.0]]).get_max_point(),
+            0
+        );
+        assert_eq!(
+            PointDistribution(vec![[1.0, 0.1], [1.0, 0.7]]).get_max_point(),
+            1
+        );
+        assert_eq!(
+            PointDistribution(vec![[0.0, 2.0], [1.0, 0.0]]).get_max_point(),
+            1
+        );
     }
 
     #[test]
@@ -16,7 +46,7 @@ mod max {
             let sorted_points: Vec<[f64; 2]> = points
                 .sort_points_by_max()
                 .iter()
-                .map(|&(_, p)| p.0)
+                .map(|&(_, p)| p)
                 .collect();
             assert_eq!(sorted_points, v2);
         };
@@ -46,7 +76,7 @@ mod min {
         let sorted_points: Vec<[f64; 2]> = points
             .sort_points_by_min()
             .iter()
-            .map(|&(_, p)| p.0)
+            .map(|&(_, p)| p)
             .collect();
         assert_eq!(sorted_points, vec![[0.0, 0.0], [3.0, 0.0], [4.0, 0.0]]);
     }

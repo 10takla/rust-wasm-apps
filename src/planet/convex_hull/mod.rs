@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod tests;
 
+use crate::planet::point_distribution::Point;
+use crate::planet::vector::Vector;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
-use crate::planet::vector::Vector;
-use crate::planet::point_distribution::point::Point;
 
 use super::point_distribution::PointDistribution;
 
@@ -31,21 +31,21 @@ impl ConvexHull {
     }
 
     pub fn set_random_ponts(point_count: usize, sizes: JsValue) -> ConvexHull {
-        let post_sizes = Point(from_value(sizes).unwrap());
+        let post_sizes: Point = from_value(sizes).unwrap();
         let points: Vec<[f64; 2]> = (0..point_count)
-        .map(|_| {
-            let start = 0.0;
-            let mut measures = [start; 2];
-            for i in 0..2 {
-                measures[i] = if post_sizes[i] != start {
-                    rand::thread_rng().gen_range(start..post_sizes[i])
-                } else {
-                    start
+            .map(|_| {
+                let start = 0.0;
+                let mut measures = [start; 2];
+                for i in 0..2 {
+                    measures[i] = if post_sizes[i] != start {
+                        rand::thread_rng().gen_range(start..post_sizes[i])
+                    } else {
+                        start
+                    }
                 }
-            }
-            measures
-        })
-        .collect();
+                measures
+            })
+            .collect();
         let point_distribution: PointDistribution = points.into();
         ConvexHull {
             point_distribution,
@@ -53,7 +53,12 @@ impl ConvexHull {
         }
     }
     pub fn get_points(&self) -> JsValue {
-        let points: Vec<[f64; 2]> = self.point_distribution.iter().map(|&(_, p)| p.0).collect();
+        let points: Vec<[f64; 2]> = self
+            .point_distribution
+            .iter()
+            .enumerate()
+            .map(|(_, &p)| p)
+            .collect();
         to_value(&points).unwrap()
     }
 
@@ -87,32 +92,34 @@ impl ConvexHull {
     fn get_next_point(&self) -> usize {
         let hull_edges_len = self.hull_edges.len();
         let n_p_i = self.hull_edges[hull_edges_len - 1];
-        let n_p = self.point_distribution[n_p_i].1;
+        let n_p = self.point_distribution[n_p_i];
 
         let points_width_ids = self.point_distribution.iter();
 
         let next_p = {
             if hull_edges_len >= 2 {
                 points_width_ids
-                    .filter(|&&(i, _)| {
+                    .enumerate()
+                    .filter(|&(i, _)| {
                         if hull_edges_len >= 3 {
                             i == self.hull_edges[0] || !self.hull_edges.contains(&i)
                         } else {
                             !self.hull_edges.contains(&i)
                         }
                     })
-                    .max_by(|&&(b_i, _), &&(c_i, _)| {
+                    .max_by(|&(b_i, _), &(c_i, _)| {
                         let (b_angle, c_angle) = (self.get_angle(b_i), self.get_angle(c_i));
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
                     .unwrap()
             } else {
                 points_width_ids
-                    .filter(|&&(i, _)| i != n_p_i)
-                    .min_by(|&&(_, b), &&(_, c)| {
+                    .enumerate()
+                    .filter(|&(i, _)| i != n_p_i)
+                    .min_by(|&(_, &b), &(_, &c)| {
                         let (b_angle, c_angle) = (
-                            (Vector(*b) - Vector(*n_p)).tan(),
-                            (Vector(*c) - Vector(*n_p)).tan(),
+                            (Vector(b) - Vector(n_p)).tan(),
+                            (Vector(c) - Vector(n_p)).tan(),
                         );
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
@@ -124,9 +131,13 @@ impl ConvexHull {
 
     fn get_angle(&self, p_i: usize) -> f64 {
         let (a, b, c) = (
-            Vector(self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]].1.0),
-            Vector(self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]].1.0),
-            Vector(self.point_distribution[p_i].1.0),
+            Vector(
+                self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]],
+            ),
+            Vector(
+                self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]]
+            ),
+            Vector(self.point_distribution[p_i]),
         );
         let ab = a - b;
         let bc = c - b;

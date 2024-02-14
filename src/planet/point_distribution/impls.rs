@@ -1,9 +1,9 @@
 use std::ops::{Deref, DerefMut};
-use super::{point::Point, PointDistribution};
+use super::{Point, PointDistribution};
 
 
 impl Deref for PointDistribution {
-    type Target = Vec<(usize, Point)>;
+    type Target = Vec<Point>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -15,8 +15,8 @@ impl DerefMut for PointDistribution {
     }
 }
 
-impl From<Vec<[f64; 2]>> for PointDistribution {
-    fn from(points: Vec<[f64; 2]>) -> Self {
-        Self(points.into_iter().map(Point::from).enumerate().collect())
+impl From<Vec<Point>> for PointDistribution {
+    fn from(points: Vec<Point>) -> Self {
+        Self(points)
     }
 }

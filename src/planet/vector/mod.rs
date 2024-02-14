@@ -1,5 +1,5 @@
 use std::ops::{Sub, Mul, Add, Div};
-use crate::planet::point_distribution::point::{DefaultMeasureValue, Point};
+use crate::planet::point_distribution::{DefaultMeasureValue, Point};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector(pub [f64; 2]);

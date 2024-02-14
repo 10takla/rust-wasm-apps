@@ -1,6 +1,6 @@
 mod circumference;
 
-use crate::planet::point_distribution::point::Point;
+use crate::planet::point_distribution::Point;
 
 use super::point_distribution::PointDistribution;
 

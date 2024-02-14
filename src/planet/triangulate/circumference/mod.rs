@@ -2,7 +2,7 @@
 mod tests;
 
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::planet::point_distribution::point::DefaultMeasureValue;
+use crate::planet::point_distribution::DefaultMeasureValue;
 
 use super::Point;
 
@@ -30,7 +30,7 @@ impl Circle {
                 P{x,y}
             }
         }
-        let ([x_a, y_a], [x_b, y_b], [x_c, y_c]) = (self.a.0, self.b.0, self.c.0);
+        let ([x_a, y_a], [x_b, y_b], [x_c, y_c]) = (self.a, self.b, self.c);
         let (a, b, c) = (P::new(x_a, y_a), P::new(x_b, y_b), P::new(x_c, y_c));
         dbg!(&a, &b, &c);
 
@@ -92,7 +92,7 @@ impl Circle {
         let o_y = l2/(1.0 - l1);
         let o_x = (t_ba - y_ba*o_y)/x_ba;
         dbg!(o_x, o_y);
-        Point([o_x, o_y])
+        [o_x, o_y]
     }
 }
 

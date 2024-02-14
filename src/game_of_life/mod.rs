@@ -32,6 +32,8 @@ pub struct Universe {
     spec_cells: Vec<Pos>,
 }
 
+
+#[wasm_bindgen]
 impl Universe {
     fn get_index(&self, pos: Pos) -> usize {
         let Pos(x, y, z) = pos;
@@ -42,11 +44,6 @@ impl Universe {
         self.spec_cells.push(pos);
     }
 
-}
-
-
-#[wasm_bindgen]
-impl Universe {
     pub fn live_neighbor_count(&self, pos: Pos) -> u8 {
         let Pos(x, y, z) = pos;
         let mut count = 0_u8;

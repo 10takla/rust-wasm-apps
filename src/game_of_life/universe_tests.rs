@@ -1,4 +1,4 @@
-use crate::game_of_life::{Cell, Pos, Universe}
+use crate::game_of_life::{Cell, Pos, Universe};
 
 fn setup() -> Universe {
     Universe::new(Some(Pos(2, 2, 2)))
@@ -92,9 +92,9 @@ fn tick() {
     // assert_eq!(live_count, 9);
     // println!("{universe}");
     // universe.by_step(3);
-    universe.set_cell(Pos(1, 2, 2));
-    universe.set_cell(Pos(2, 2, 2));
-    universe.set_cell(Pos(3, 2, 2));
+    universe.set_cell(Pos(1, 2, 2)).unwrap();
+    universe.set_cell(Pos(2, 2, 2)).unwrap();
+    universe.set_cell(Pos(3, 2, 2)).unwrap();
     println!("{universe}");
     universe.tick();
     println!("{universe}");
@@ -104,5 +104,14 @@ fn tick() {
     println!("{universe}");
     universe.tick();
     println!("{universe}");
+
+}
+
+
+
+// other_tests
+#[test]
+fn other_tests() {
+     Universe::new(Some(Pos(2, 2, 2))).set_spec_cell(Pos(2, 2, 2));
 
 }

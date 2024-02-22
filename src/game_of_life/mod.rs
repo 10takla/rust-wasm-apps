@@ -18,8 +18,8 @@ pub struct Pos(pub u32, pub u32, pub u32);
 
 #[wasm_bindgen]
 impl Pos {
-    pub fn new(x: u32, y: u32, z: u32) -> Pos {
-        Pos(x, y, z)
+    pub fn new(x: u32, y: u32, z: u32) -> Self {
+        Self(x, y, z)
     }
 }
 
@@ -69,13 +69,13 @@ impl Universe {
         }
         count
     }
-    pub fn new(sizes: Option<Pos>) -> Universe {
+    pub fn new(sizes: Option<Pos>) -> Self {
         let Pos(width, height, depth) = match sizes {
             Some(sizes) => sizes,
             None => Pos(10, 10, 10)
         };
         let cells = (0..width * height * depth).map(|_| Cell::Dead).collect();
-        Universe { width, height, depth, cells, spec_cells: vec![] }
+        Self { width, height, depth, cells, spec_cells: vec![] }
     }
     pub fn set_by_step(&mut self, step: usize) {
         self.cells = self.cells.iter().copied().enumerate().map(|(i, _)| {

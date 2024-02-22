@@ -1,67 +1,35 @@
 #[cfg(test)]
 mod tests;
 
-use crate::planet::point_distribution::Point;
-use crate::planet::vector::Vector;
-use rand::Rng;
+use crate::planet::{point_distribution::{PointDistribution, Points}, shared::vector::ui::triangle::Triangle};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
-use super::point_distribution::PointDistribution;
-
-type Points = Vec<Point>;
+type HullEdges = Vec<usize>;
 
 #[wasm_bindgen]
 #[derive(Debug, Deserialize, Serialize)]
 struct ConvexHull {
     point_distribution: PointDistribution,
-    hull_edges: Vec<usize>,
+    hull_edges: HullEdges,
+}
+
+//setters getters
+#[wasm_bindgen]
+impl ConvexHull {
+    #[wasm_bindgen(constructor)]
+    pub fn from_distribution(points: JsValue) -> Self {
+        let points: Points = from_value(points).unwrap();
+        Self {
+            point_distribution: points.into(),
+            hull_edges: Vec::new(),
+        }
+    }
 }
 
 #[wasm_bindgen]
 impl ConvexHull {
-    pub fn set_points(points: JsValue) -> ConvexHull {
-        let post_points: Vec<[f64; 2]> = from_value(points).unwrap();
-        let point_distribution: PointDistribution = post_points.into();
-        ConvexHull {
-            point_distribution,
-            hull_edges: Vec::new(),
-        }
-    }
-
-    pub fn set_random_ponts(point_count: usize, sizes: JsValue) -> ConvexHull {
-        let post_sizes: Point = from_value(sizes).unwrap();
-        let points: Vec<[f64; 2]> = (0..point_count)
-            .map(|_| {
-                let start = 0.0;
-                let mut measures = [start; 2];
-                for i in 0..2 {
-                    measures[i] = if post_sizes[i] != start {
-                        rand::thread_rng().gen_range(start..post_sizes[i])
-                    } else {
-                        start
-                    }
-                }
-                measures
-            })
-            .collect();
-        let point_distribution: PointDistribution = points.into();
-        ConvexHull {
-            point_distribution,
-            hull_edges: Vec::new(),
-        }
-    }
-    pub fn get_points(&self) -> JsValue {
-        let points: Vec<[f64; 2]> = self
-            .point_distribution
-            .iter()
-            .enumerate()
-            .map(|(_, &p)| p)
-            .collect();
-        to_value(&points).unwrap()
-    }
-
     pub fn get_convex_hull(&mut self) -> JsValue {
         loop {
             let edge = self.tick();
@@ -118,8 +86,8 @@ impl ConvexHull {
                     .filter(|&(i, _)| i != n_p_i)
                     .min_by(|&(_, &b), &(_, &c)| {
                         let (b_angle, c_angle) = (
-                            (Vector(b) - Vector(n_p)).tan(),
-                            (Vector(c) - Vector(n_p)).tan(),
+                            (b - n_p).tan(),
+                            (c - n_p).tan(),
                         );
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
@@ -130,23 +98,23 @@ impl ConvexHull {
     }
 
     fn get_angle(&self, p_i: usize) -> f64 {
-        let (a, b, c) = (
-            Vector(
-                self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]],
-            ),
-            Vector(
-                self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]]
-            ),
-            Vector(self.point_distribution[p_i]),
-        );
-        let ab = a - b;
-        let bc = c - b;
+        let t: Triangle = Triangle::from([
+            self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]],
+            self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]],
+            self.point_distribution[p_i],
+        ]);
+        t.get_angle_by_point(1)
+        // let (a, b, c) = (
+            
+        // );
+        // let ab = a - b;
+        // let bc = c - b;
 
-        let ab_length = ab.radius();
-        let bc_length = bc.radius();
+        // let ab_length = ab.radius();
+        // let bc_length = bc.radius();
 
-        let cos_theta = ab.scalar(&bc) / (ab_length * bc_length);
+        // let cos_theta = ab.scalar(&bc) / (ab_length * bc_length);
 
-        cos_theta.acos()
+        // cos_theta.acos()
     }
 }

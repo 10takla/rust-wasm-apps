@@ -1,4 +1,2 @@
-mod vector;
+mod shared;
 mod point_distribution;
-mod convex_hull;
-mod triangulate;

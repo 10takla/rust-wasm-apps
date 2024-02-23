@@ -1,18 +1,18 @@
-use crate::planet::shared::point::{DefaultMeasureValue, Point};
+use crate::planet::shared::point::Point;
 use super::Vector;
-use std::ops::{Sub, Mul, Add, Div};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-impl From<Point> for Vector {
-    fn from(point: Point) -> Self {
+impl<T> From<Point<T>> for Vector<T> {
+    fn from(point: Point<T>) -> Self {
         Self(point)
     }
 }
 
-impl Add<DefaultMeasureValue> for Vector {
+impl<T: AddAssign<T> + Copy> Add<T> for Vector<T>{
     type Output = Self;
 
-    fn add(self, other: DefaultMeasureValue) -> Self {
-        let mut new_vector = self.0;
+    fn add(self, other: T) -> Self {
+        let mut new_vector = *self;
         for i in  0..new_vector.len() {
             new_vector[i] += other;
         }
@@ -20,7 +20,7 @@ impl Add<DefaultMeasureValue> for Vector {
     }
 }
 
-impl Add for Vector {
+impl<T: AddAssign<T> + Copy> Add for Vector<T> {
     type Output = Self;
     fn add(self, other: Self) -> Self {
         let mut new_vector = self.0;
@@ -31,10 +31,10 @@ impl Add for Vector {
     }
 }
 
-impl Sub<DefaultMeasureValue> for Vector {
+impl<T: SubAssign<T> + Copy> Sub<T> for Vector<T> {
     type Output = Self;
-    fn sub(self, other: DefaultMeasureValue) -> Self {
-        let mut new_vector = self.0;
+    fn sub(self, other: T) -> Self {
+        let mut new_vector = *self;
         for i in 0..new_vector.len() {
             new_vector[i] -= other;
         }
@@ -42,10 +42,10 @@ impl Sub<DefaultMeasureValue> for Vector {
     }
 }
 
-impl Sub for Vector {
+impl<T: SubAssign<T> + Copy> Sub for Vector<T> {
     type Output = Self;
     fn sub(self, other: Self) -> Self {
-        let mut new_vector = self.0;
+        let mut new_vector = *self;
         for i in 0..new_vector.len() {
             new_vector[i] -= other[i];
         }
@@ -53,10 +53,10 @@ impl Sub for Vector {
     }
 }
 
-impl Mul<DefaultMeasureValue> for Vector {
+impl<T: MulAssign<T> + Copy> Mul<T> for Vector<T> {
     type Output = Self;
-    fn mul(self, other: DefaultMeasureValue) -> Self {
-        let mut new_vector = self.0;
+    fn mul(self, other: T) -> Self {
+        let mut new_vector = *self;
         for i in 0..new_vector.len() {
             new_vector[i] *= other;
         }
@@ -65,10 +65,10 @@ impl Mul<DefaultMeasureValue> for Vector {
 }
 
 
-impl Mul for Vector {
+impl<T: MulAssign<T> + Copy> Mul for Vector<T> {
     type Output = Self;
     fn mul(self, other: Self) -> Self {
-        let mut new_vector = self.0;
+        let mut new_vector = *self;
         for i in 0..new_vector.len() {
             new_vector[i] *= other[i];
         }
@@ -76,10 +76,10 @@ impl Mul for Vector {
     }
 }
 
-impl Div<DefaultMeasureValue> for Vector {
+impl<T: DivAssign<T> + Copy> Div<T> for Vector<T> {
     type Output = Self;
-    fn div(self, other: DefaultMeasureValue) -> Self {
-        let mut new_vector = self.0;
+    fn div(self, other: T) -> Self {
+        let mut new_vector = *self;
         for i in 0..new_vector.len() {
             new_vector[i] /= other;
         }
@@ -87,10 +87,10 @@ impl Div<DefaultMeasureValue> for Vector {
     }
 }
 
-impl Div for Vector {
+impl<T: DivAssign<T> + Copy> Div for Vector<T> {
     type Output = Self;
     fn div(self, other: Self) -> Self {
-        let mut new_vector = self.0;
+        let mut new_vector = *self;
         for i in 0..new_vector.len() {
             new_vector[i] /= other[i];
         }

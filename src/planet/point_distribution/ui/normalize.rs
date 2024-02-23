@@ -1,6 +1,3 @@
-use serde_wasm_bindgen::{from_value, to_value};
-use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
-
 use crate::planet::point_distribution::PointDistribution;
 
 impl PointDistribution {

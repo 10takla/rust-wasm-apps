@@ -69,13 +69,13 @@ mod min {
 
     #[test]
     fn get_min_point() {
-        let points: PointDistribution = vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]].into();
+        let points = PointDistribution::from(vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]]);
         assert_eq!(points.get_min_point(), 1);
     }
 
     #[test]
     fn sort_points_by_min() {
-        let points: PointDistribution = vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]].into();
+        let points = PointDistribution::from(vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]]);
         let sorted_points: Points = points
             .sort_points_by_min()
             .iter()

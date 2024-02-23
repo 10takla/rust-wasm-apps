@@ -1,15 +1,15 @@
 #[cfg(test)]
 mod tests;
 
-use crate::planet::{point_distribution::{PointDistribution, Points}, shared::vector::ui::triangle::Triangle};
-use serde::{Deserialize, Serialize};
+use crate::planet::{point_distribution::{PointDistribution, Points}, shared::vector::ui::line::ui::angle::ui::triangle::Triangle};
+use serde::Serialize;
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
 type HullEdges = Vec<usize>;
 
 #[wasm_bindgen]
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 struct ConvexHull {
     point_distribution: PointDistribution,
     hull_edges: HullEdges,
@@ -98,12 +98,12 @@ impl ConvexHull {
     }
 
     fn get_angle(&self, p_i: usize) -> f64 {
-        let t: Triangle = Triangle::from([
+        let triangle: Triangle = Triangle::from([
             self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]],
             self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]],
             self.point_distribution[p_i],
         ]);
-        t.get_angle_by_point(1)
+        triangle.abc.get_angle()
         // let (a, b, c) = (
             
         // );

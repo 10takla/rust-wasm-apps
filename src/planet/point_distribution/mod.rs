@@ -9,15 +9,14 @@ use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 use std::cmp::Ordering;
-use crate::derive_deref;
+use crate::{derive_deref, planet::shared::point::Points};
 use crate::planet::shared::point::Point;
-use super::shared::vector::Vector;
+use super::shared::vector::{Vector, Vectors};
 
-pub type Points = Vec<Point>;
-pub type Vectors = Vec<Vector>;
+
 
 #[wasm_bindgen]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct PointDistribution(Vectors);
 derive_deref!(PointDistribution, 0, Vectors);
 
@@ -58,6 +57,9 @@ impl PointDistribution {
 
 impl PointDistribution {
     pub fn get_max_point(&self) -> usize {
+        self.sort_points_by_max()[0].0
+    }
+    pub fn get_max_point_by_axis(&self) -> usize {
         self.sort_points_by_max()[0].0
     }
 

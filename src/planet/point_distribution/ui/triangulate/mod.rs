@@ -1,16 +1,12 @@
 #[cfg(test)]
 mod tests;
-mod ui;
 
-use std::ops::RangeBounds;
-
-use crate::derive_deref;
-use crate::planet::shared::vector::ui::triangle::Triangle;
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::Triangle;
 use crate::planet::{point_distribution::PointDistribution, shared::vector::Vector};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
-use wasm_bindgen_test::{console_log, wasm_bindgen_test};
+use wasm_bindgen_test::wasm_bindgen_test;
 
 type Triangles = Vec<[usize; 3]>;
 
@@ -37,22 +33,23 @@ impl PointDistribution {
                 }
                 for &(c_i, c) in points.iter() {
                     if [a_i, b_i].contains(&c_i)
-                        // || PointDistribution::is_has_tries(&passed_tries, a_i, b_i, c_i)
+                    // || PointDistribution::is_has_tries(&passed_tries, a_i, b_i, c_i)
                     {
                         continue;
                     } else {
                         passed_tries.push([a_i, b_i, c_i]);
                     }
 
-                    let center = Triangle::from([a, b, c]).get_center();
-                    let radius = (a - center).radius();
+                    let triangle = Triangle::from([a, b, c]);
+                    let circle = triangle.get_circle();
+                    let radius = circle.radius();
 
                     let mut is_triangle = true;
                     for &(d_i, d) in points.iter() {
                         if [a_i, b_i, c_i].contains(&d_i) {
                             continue;
                         }
-                        let distance = (d - center).radius();
+                        let distance = (d - circle.center).radius();
                         if distance < radius {
                             is_triangle = false;
                             break;
@@ -78,19 +75,16 @@ impl PointDistribution {
     }
 }
 
-
 struct Delone {
     points: PointDistribution,
-    triangles: Triangles
+    triangles: Triangles,
 }
-
 
 impl Delone {
     pub fn tick(&mut self) {
         if self.triangles.len() == 0 {
             // self.points = self.points.sort_points_by_min();
         } else {
-
         }
     }
 }

@@ -81,7 +81,7 @@ mod convex_hull {
 
 #[wasm_bindgen_test]
 fn get_angle() {
-    let point_distribution: PointDistribution = vec![[-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]].into();
+    let point_distribution = PointDistribution::from(vec![[-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]]);
     let hull = ConvexHull {
         point_distribution,
         hull_edges: vec![0, 1],

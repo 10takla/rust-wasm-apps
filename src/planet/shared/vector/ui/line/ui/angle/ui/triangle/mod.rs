@@ -1,23 +1,37 @@
+mod impls;
 #[cfg(test)]
 mod tests;
-mod impls;
 pub mod ui;
 
+use std::{f64::NAN, iter::Sum};
+
 use super::super::Angle;
+use crate::{
+    planet::shared::{
+        point::DefaultMeasureValue,
+        vector::{Number, Vector},
+    },
+    vector_as,
+};
+use num::Float;
 use ui::circle::Circle;
 
 #[derive(Debug)]
-pub struct Triangle {
-    pub bac: Angle,
-    pub abc: Angle,
-    pub acb: Angle,
+pub struct Triangle<T = DefaultMeasureValue> {
+    // в центре угла центральная координата, по бокам соседние по часовой стрелке
+    pub cab: Angle<T>,
+    pub abc: Angle<T>,
+    pub bca: Angle<T>,
 }
 
-impl Triangle {
-    pub fn get_circle(&self) -> Circle {
-        
-        let (a, b, c) = (self.abc.ab.a, self.abc.ab.b, self.abc.bc.b);
-        println!("{a:?} {b:?} {c:?}");
+impl<T: Number> Triangle<T> {
+    pub fn get_circle(&self) -> Circle<T> {
+        let (a, b, c): (Vector, Vector, Vector) = (
+            (&self.abc.ba.b).into(),
+            (&self.abc.ba.a).into(),
+            (&self.abc.bc.b).into(),
+        );
+        // println!("{a:?} {b:?} {c:?}");
         let (c_ab, c_bc) = ((a + b) / 2.0, (b + c) / 2.0);
         /*
         {
@@ -37,6 +51,7 @@ impl Triangle {
             Ebc = c.x*c_bc.x - b.x*c_bc.x + c.y*c_bc.y - b.y*c_bc.y
         ]
         */
+
         let e_ab = (b * c_ab).sum() - (a * c_ab).sum();
         let e_bc = (c * c_bc).sum() - (b * c_bc).sum();
         /*
@@ -71,10 +86,15 @@ impl Triangle {
         ]
         */
         let x = (e_ab * v_bc[1] - v_ab[1] * e_bc) / (v_ab[0] * v_bc[1] - v_ab[1] * v_bc[0]);
-        let y = (e_bc - v_bc[0] * x) / v_bc[1];
+        let mut y = (e_bc - v_bc[0] * x) / v_bc[1];
+        if f64::is_nan(y)  {
+            y = dbg!(Triangle::from([b, a , c]).get_circle().center[1]);
+        }
+        
+        let (x, y) = (T::from(x).unwrap(), T::from(y).unwrap());
         Circle {
-            point: self.abc.ab.a,
-            center: [x, y].into(),
+            point: self.abc.ba.a,
+            center: [x, y].into()
         }
     }
 }

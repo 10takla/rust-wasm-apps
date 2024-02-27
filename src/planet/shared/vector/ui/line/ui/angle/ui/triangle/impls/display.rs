@@ -1,16 +1,22 @@
+use crate::{
+    planet::shared::vector::{
+        ui::line::ui::angle::{ui::triangle::Triangle, Angle}, FromAll, Number, Vector
+    },
+    vector_as,
+};
 use core::fmt;
-use std::fmt::{Display, Formatter};
-use crate::planet::shared::vector::{ui::line::ui::angle::ui::triangle::Triangle, Vector};
+use std::{fmt::{Display, Formatter}};
 
-impl Display for Triangle {
+
+impl<T: Number + PartialOrd + FromAll + Into<i32>  + From<i32> + Into<f64> + From<f64>> Display for Triangle<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let (a, b, c) = (self.abc.ab.a, self.abc.ab.b, self.abc.bc.b);
-        // let t = PointDistribution::from(vec![a, b, c]);
-        // let r = t.get_max_point();
-        // let y = t.get_min_point();
+        let (a, b, c) = (self.cab.ba.a, self.abc.ba.a, self.bca.ba.a);
 
-        const MAX_WIDTH: i32 = 10;
-        const MAX_HEIGHT: i32 = 10;
+        let t: Triangle<i32> = Triangle::from([Vector::from(&a), Vector::from(&b), Vector::from(&c)]);
+        let (a, b, c) = (t.cab.ba.a, t.abc.ba.a, t.bca.ba.a);
+
+        const MAX_WIDTH: i32 = 20;
+        const MAX_HEIGHT: i32 = 20;
         const MAX_PADDING: i32 = 2;
         let max = Vector::from([
             [a, b, c]
@@ -32,46 +38,60 @@ impl Display for Triangle {
                 .min_by(|&a, &b| a[1].partial_cmp(&b[1]).unwrap())
                 .unwrap()[1],
         ]);
-        dbg!(max, min);
-        let factor = Vector::from([
-            (MAX_WIDTH - MAX_PADDING - 1) as f64,
-            (MAX_HEIGHT - MAX_PADDING - 1) as f64,
-        ]) / dbg!(max - min);
-        dbg!(factor);
-        let t = {
-            let t: Vec<Vector> = dbg!([a, b, c]).into_iter().map(|v| v - min).collect();
-            let t: Vec<Vector> = dbg!(t).into_iter().map(|v| v * factor).collect();
-            let t: Vec<Vector<i32>> = t
-                .into_iter()
-                .map(|v| Vector::from([v[0] as i32, v[1] as i32]) + MAX_PADDING)
-                .collect();
-            t
+
+        let vertices: [Vector<i32>; 3] = {
+            let factor: Vector<i32> = Vector::from([
+                (MAX_WIDTH - MAX_PADDING / 2),
+                (MAX_HEIGHT - MAX_PADDING / 2),
+            ]) / (max - min);
+            
+            [a, b, c]
+            .into_iter()
+            .map(|v| (v - min) * factor)
+            .map(|v| v + MAX_PADDING)
+            .collect::<Vec<_>>()
+            .try_into()
+            .expect("Expected a Vec of length 3")
         };
-        dbg!(self.bac.get_normal());
-        // let u: Vec<_> = self.iter().map(|bac|  {
-        //     // Vector::from([bac.get_normal().cos(),
-        //     // bac.get_normal().sin()]) * (2.0_f32.sqrt() as f64) + bac.ab.b
-        //     bac.get_normal()
-        // }).collect();
-        // dbg!(u);
-        let field = (0..MAX_HEIGHT + MAX_PADDING)
+        // dbg!(self.bac, self.bac.get_normal());
+        let u: Vec<Vector<i32>> = self
+            .iter()
+            .map(|cab| {
+                let r = t.cab;
+                let r = cab.get_normal().angle();
+                let r = (r + 180.into()) % 360.into();
+                let v = Angle::angle_to_vector(r) + cab.ba.a;
+                Vector::<i32>::from(&v) + MAX_PADDING
+            })
+            .collect();
+        
+        let (height, width) = (MAX_HEIGHT + MAX_PADDING * 2, MAX_WIDTH + MAX_PADDING * 2);
+        let field = (0..height)
             .map(|h_i| {
-                (0..MAX_WIDTH + MAX_PADDING)
+                (0..width)
                     .map(|w_i| {
-                        let r: Option<usize> = t
+                        let h_i = height - h_i - 1;
+                        let r: Option<usize> = u
                             .iter()
                             .map(|v| [v[0] - 1, v[1]])
                             .position(|v| v == [w_i, h_i]);
                         if let Some(i) = r {
                             return ["a", "b", "c"][i];
                         }
+                        // let r: Option<usize> = vertices
+                        //     .iter()
+                        //     .map(|v| [v[0] - 1, v[1]])
+                        //     .position(|v| v == [w_i, h_i]);
+                        // if let Some(i) = r {
+                        //     return ["a", "b", "c"][i];
+                        // }
 
-                        if t.contains(&Vector::from([w_i, h_i])) {
+                        if vertices.contains(&Vector::from([w_i, h_i])) {
                             return "●";
                         }
 
                         if (h_i < MAX_PADDING || w_i < MAX_PADDING)
-                            || (h_i >= MAX_HEIGHT || w_i >= MAX_WIDTH)
+                            || (h_i >= MAX_HEIGHT + MAX_PADDING || w_i >= MAX_WIDTH + MAX_PADDING)
                         {
                             return "□";
                         }

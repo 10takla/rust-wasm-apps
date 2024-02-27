@@ -1,17 +1,19 @@
-use crate::planet::shared::{point::DefaultMeasureValue, vector::Vector};
+use std::iter::Sum;
+
+use crate::planet::shared::{point::DefaultMeasureValue, vector::{Number, Vector}};
 
 #[cfg(test)]
 mod tests;
 mod impls;
 
 #[derive(Debug)]
-pub struct Circle {
-    pub center: Vector,
-    pub point: Vector,
+pub struct Circle<T = DefaultMeasureValue> {
+    pub center: Vector<T>,
+    pub point: Vector<T>,
 }
 
-impl Circle {
-    pub fn radius(&self) -> DefaultMeasureValue {
+impl<T: Number + From<f64> + Into<f64> + Sum + Default> Circle<T> {
+    pub fn radius(&self) -> T {
         (self.point - self.center).radius()
     }
 }

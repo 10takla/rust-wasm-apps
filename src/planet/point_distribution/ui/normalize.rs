@@ -1,4 +1,4 @@
-use crate::planet::point_distribution::PointDistribution;
+use crate::planet::{point_distribution::PointDistribution, shared::vector::Vector};
 
 impl PointDistribution {
     pub fn normalize_points(&self) -> Vec<f64> {

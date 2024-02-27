@@ -86,8 +86,8 @@ impl ConvexHull {
                     .filter(|&(i, _)| i != n_p_i)
                     .min_by(|&(_, &b), &(_, &c)| {
                         let (b_angle, c_angle) = (
-                            (b - n_p).tan(),
-                            (c - n_p).tan(),
+                            (b - n_p).atan(),
+                            (c - n_p).atan(),
                         );
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
@@ -104,17 +104,5 @@ impl ConvexHull {
             self.point_distribution[p_i],
         ]);
         triangle.abc.get_angle()
-        // let (a, b, c) = (
-            
-        // );
-        // let ab = a - b;
-        // let bc = c - b;
-
-        // let ab_length = ab.radius();
-        // let bc_length = bc.radius();
-
-        // let cos_theta = ab.scalar(&bc) / (ab_length * bc_length);
-
-        // cos_theta.acos()
     }
 }

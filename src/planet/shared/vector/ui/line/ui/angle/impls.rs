@@ -1,34 +1,66 @@
-use crate::planet::shared::{point::Point, vector::{ui::line::Line, Vector}};
+use std::error::Error;
 
 use super::Angle;
+use crate::planet::shared::{
+    point::Point,
+    vector::{ui::line::Line, Number, Vector},
+};
 
-impl From<[Line; 2]> for Angle {
-    fn from(lines: [Line; 2]) -> Self {
-        if lines[0].a != lines[1].a {
-            panic!("Lines not valid for Angle\n{:?}", dbg!(lines));
-        }
+
+impl<T> From<Angle<T>> for [Line<T>; 2] {
+    fn from(value: Angle<T>) -> Self {
+        [value.ba, value.bc]
+    }
+}
+
+impl<T> From<Angle<T>> for [Vector<T>; 3] {
+    fn from(value: Angle<T>) -> Self {
+        [value.ba.b.into(), value.ba.a.into(), value.bc.b.into()]
+    }
+}
+
+impl<T> From<Angle<T>> for [Point<T>; 3] {
+    fn from(value: Angle<T>) -> Self {
+        [value.ba.b.into(), value.ba.a.into(), value.bc.b.into()]
+    }
+}
+
+
+impl<F, I> From<&Angle<F>> for Angle<I>
+where
+    F: Into<I> + Number,
+    I: Number,
+{
+    fn from(value: &Angle<F>) -> Self {
+        let (ba, bc): (Line<I>, Line<I>) = ((&value.ba).into(), (&value.bc).into());
+        Angle { ba, bc }
+    }
+}
+
+impl<T: Copy> From<[Line<T>; 2]> for Angle<T> {
+    fn from(lines: [Line<T>; 2]) -> Self {
         Self {
-            ab: lines[0],
+            ba: lines[0],
             bc: lines[1],
         }
     }
 }
 
-impl From<[Vector; 3]> for Angle {
-    fn from(vecs: [Vector; 3]) -> Self {
+impl<T: Copy> From<[Vector<T>; 3]> for Angle<T> {
+    fn from(vecs: [Vector<T>; 3]) -> Self {
         let (a, b, c) = (vecs[0], vecs[1], vecs[2]);
         Self {
-            ab: [b, a].into(),
+            ba: [b, a].into(),
             bc: [b, c].into(),
         }
     }
 }
 
-impl From<[Point; 3]> for Angle {
-    fn from(points: [Point; 3]) -> Self {
+impl<T: Copy> From<[Point<T>; 3]> for Angle<T> {
+    fn from(points: [Point<T>; 3]) -> Self {
         let (a, b, c) = (points[0], points[1], points[2]);
         Self {
-            ab: [b, a].into(),
+            ba: [b, a].into(),
             bc: [b, c].into(),
         }
     }

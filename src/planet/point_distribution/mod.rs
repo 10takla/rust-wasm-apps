@@ -4,7 +4,7 @@ mod impls;
 mod ui;
 
 use rand::Rng;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;

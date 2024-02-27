@@ -3,28 +3,36 @@ mod tests;
 mod impls;
 pub mod ui;
 
-use crate::planet::shared::point::DefaultMeasureValue;
+use crate::planet::shared::{point::DefaultMeasureValue, vector::Number};
 use super::super::{Line, Vector};
 
+
 #[derive(Debug, Copy, Clone)]
-pub struct Angle {
-    pub ab: Line,
-    pub bc: Line,
+pub struct Angle<T = DefaultMeasureValue> {
+    // линии расположны от центральной вершины к соседним
+    pub ba: Line<T>,
+    pub bc: Line<T>,
 }
 
-impl Angle {
-    pub fn get_normal(&self) -> Vector {
-        let ab = self.ab.get_vector();
-        let bc = self.bc.get_vector();
-        // ((ab - bc) / 2.0).angle()
-        (ab - bc) / 2.0
+impl<T: Number> Angle<T> {
+    pub fn angle_to_vector(angle: T) -> Vector<T> {
+        let v = Vector::<f64>::from([angle.into().cos(), angle.into().sin()]);
+        (&v).into()
     }
     
-    pub fn get_angle(&self) -> DefaultMeasureValue {
-        let ab = self.ab.get_vector();
+    pub fn get_normal(&self) -> Vector<T> {
+        let ba = self.ba.get_vector();
         let bc = self.bc.get_vector();
-        (ab.scalar(&bc) / (ab.radius() * bc.radius()))
+        (bc + ba) / T::from(2).unwrap()
+    }
+    
+    pub fn get_angle(&self) -> T {
+        let ab = self.ba.get_vector();
+        let bc = self.bc.get_vector();
+        T::from(
+            (ab.scalar(&bc) / (ab.radius() * bc.radius())).into()
             .acos()
             .to_degrees()
+        ).unwrap()
     }
 }

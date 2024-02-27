@@ -1,26 +1,26 @@
-use crate::planet::shared::vector::ui::line::ui::angle::Angle;
+use crate::planet::shared::vector::{ui::line::ui::angle::Angle};
 use super::Triangle;
 
-impl IntoIterator for Triangle {
-    type Item = Angle;
+impl<T> IntoIterator for Triangle<T> {
+    type Item = Angle<T>;
     type IntoIter = std::array::IntoIter<Self::Item, 3>;
 
     fn into_iter(self) -> Self::IntoIter {
-        [self.bac, self.abc, self.acb].into_iter()
+        [self.cab, self.abc, self.bca].into_iter()
     }
 }
-pub struct TriangleIterator<'a> {
-    iter: &'a Triangle,
+pub struct TriangleIterator<'a, T> {
+    iter: &'a Triangle<T>,
     count: usize,
 }
 
-impl<'a> Iterator for TriangleIterator<'a> {
-    type Item = &'a Angle;
+impl<'a, T> Iterator for TriangleIterator<'a, T> {
+    type Item = &'a Angle<T>;
     fn next(&mut self) -> Option<Self::Item> {
         match self.count {
             0 => {
                 self.count += 1;
-                Some(&self.iter.bac)
+                Some(&self.iter.cab)
             },
             1 => {
                 self.count += 1;
@@ -28,15 +28,15 @@ impl<'a> Iterator for TriangleIterator<'a> {
             },
             2 => {
                 self.count += 1;
-                Some(&self.iter.acb)
+                Some(&self.iter.bca)
             },
             _ => None
         }
     }
 }
 
-impl Triangle {
-    pub fn iter(&self) -> TriangleIterator {
+impl<T> Triangle<T> {
+    pub fn iter(&self) -> TriangleIterator<T> {
         TriangleIterator {
             iter: self,
             count: 0,

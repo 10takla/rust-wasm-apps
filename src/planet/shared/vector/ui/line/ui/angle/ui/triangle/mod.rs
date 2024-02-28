@@ -4,7 +4,6 @@ mod tests;
 pub mod ui;
 
 use std::{f64::NAN, iter::Sum};
-
 use super::super::Angle;
 use crate::{
     planet::shared::{
@@ -13,7 +12,6 @@ use crate::{
     },
     vector_as,
 };
-use num::Float;
 use ui::circle::Circle;
 
 #[derive(Debug)]

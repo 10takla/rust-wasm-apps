@@ -1,6 +1,15 @@
-use super::{ui::line::Line, Number, Vector};
+use super::{Number, Vector};
 use crate::planet::shared::point::Point;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign}};
+
+impl Sum for Vector {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Vector([0.0,  0.0]), |acc, v| {
+            acc + v
+        })
+    }
+}
+
 
 impl<T> From<Vector<T>> for Point<T> {
     fn from(value: Vector<T>) -> Self {

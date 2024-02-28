@@ -1,4 +1,5 @@
 mod iterator;
+mod ordering;
 
 use super::Line;
 use crate::planet::shared::{point::Point, vector::{Number, Vector}};

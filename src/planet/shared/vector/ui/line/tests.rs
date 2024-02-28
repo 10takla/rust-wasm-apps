@@ -2,10 +2,19 @@ use crate::planet::shared::point::Point;
 
 use super::Line;
 
-#[test]
-fn convert() {
-    let line = Line::from([[1, 1], [2, 2]]);
-    let line = Line::<f64>::from(&line);
-    let points: [Point; 2] = line.into();
-    assert_eq!(points, [[1.0, 1.0], [2.0, 2.0]]);
+#[macro_export]
+macro_rules! convert_test {
+    ($name:ident, $l:tt, $([$($c:tt), +]), +) => {
+        #[test]
+        fn convert() {
+            let line = $name::from([$([$($c), +],) +]); 
+            let line: $name<f64> = (&line).into();
+            
+            let points: [Point; $l] = line.into();
+            assert_eq!(points, [$([$($c as f64), +],) +]);
+        }
+    };
 }
+
+convert_test!(Line, 2, [1, 1], [2, 2]);
+

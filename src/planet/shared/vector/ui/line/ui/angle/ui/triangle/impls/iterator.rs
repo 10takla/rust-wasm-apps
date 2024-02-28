@@ -1,4 +1,4 @@
-use crate::planet::shared::vector::{ui::line::ui::angle::Angle};
+use crate::planet::shared::vector::ui::line::ui::angle::Angle;
 use super::Triangle;
 
 impl<T> IntoIterator for Triangle<T> {

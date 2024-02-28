@@ -1,8 +1,47 @@
-mod iterator;
 mod display;
+mod iterator;
 
-use crate::planet::shared::{point::Point, vector::{ui::line::{ui::angle::Angle, Line}, Vector}};
 use super::Triangle;
+use crate::planet::shared::{
+    point::Point,
+    vector::{
+        ui::line::{ui::angle::Angle, Line},
+        Number, Vector,
+    },
+};
+
+// impl<T: Copy> From<Triangle<T>> for [Line<T>; 3] {
+//     fn from(value: Triangle<T>) -> Self {
+//         value.abc.into()
+//     }
+// }
+
+impl<T> From<Triangle<T>> for [Vector<T>; 3] {
+    fn from(value: Triangle<T>) -> Self {
+        value.abc.into()
+    }
+}
+
+impl<T> From<Triangle<T>> for [Point<T>; 3] {
+    fn from(value: Triangle<T>) -> Self {
+        value.abc.into()
+    }
+}
+
+impl<F, I> From<&Triangle<F>> for Triangle<I>
+where
+    F: Into<I> + Number,
+    I: Number,
+{
+    fn from(value: &Triangle<F>) -> Self {
+        let (cab, abc, bca): (Angle<I>, Angle<I>, Angle<I>) = (
+            (&value.cab).into(),
+            (&value.abc).into(),
+            (&value.bca).into(),
+        );
+        Triangle { cab, abc, bca }
+    }
+}
 
 impl<T: Copy> From<[Angle<T>; 3]> for Triangle<T> {
     fn from(angles: [Angle<T>; 3]) -> Self {

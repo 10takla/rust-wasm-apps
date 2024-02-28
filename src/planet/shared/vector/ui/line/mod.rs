@@ -12,7 +12,6 @@ pub struct Line<T = DefaultMeasureValue> {
 }
 
 impl<T: Number> Line<T> {
-
     pub fn get_vector(&self) -> Vector<T> {
         self.b - self.a
     }

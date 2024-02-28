@@ -45,6 +45,7 @@ impl Number for f64 {}
 pub struct Vector<T = DefaultMeasureValue>(pub Point<T>);
 derive_deref!(Vector, 0, Point<T>, T);
 
+
 pub type Vectors<T = DefaultMeasureValue> = Vec<Vector<T>>;
 
 #[macro_export]
@@ -57,8 +58,6 @@ macro_rules! vector_as {
         Vector::from(tmp)
     }};
 }
-
-
 
 impl<T> Vector<T>
 where 

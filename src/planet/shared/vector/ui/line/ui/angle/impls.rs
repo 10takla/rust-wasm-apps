@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use super::Angle;
 use crate::planet::shared::{
     point::Point,

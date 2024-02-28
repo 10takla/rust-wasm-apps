@@ -1,4 +1,4 @@
-use crate::planet::shared::{point::Point, vector::ui::line::{ui::angle::Angle, Line}};
+use crate::{convert_test, planet::shared::{point::Point, vector::ui::line::{ui::angle::Angle, Line}}};
 
 mod from_lines {
     use super::*;
@@ -39,10 +39,4 @@ mod from_lines {
 }
 
 
-#[test]
-fn convert() {
-    let angle = Angle::from([[1, 1], [2, 2], [3,3]]);
-    let angle: Angle<f64> = (&angle).into();
-    let angle: [Point; 3] = angle.into();
-    assert_eq!(angle, [[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-}
+convert_test!(Angle, 3, [1, 1], [2, 2], [3, 3]);

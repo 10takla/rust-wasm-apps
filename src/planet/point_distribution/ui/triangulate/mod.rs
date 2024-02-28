@@ -20,7 +20,7 @@ impl<T: PartialEq> Dota<T> for Vec<T> {
     }
 }
 
-#[wasm_bindgen]
+// #[wasm_bindgen]
 impl PointDistribution {
     pub fn get_triangles(&self) -> JsValue {
         let mut triangles: Triangles = vec![];

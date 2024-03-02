@@ -2,14 +2,11 @@ use super::{Number, Vector};
 use crate::planet::shared::point::Point;
 use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign}};
 
-impl Sum for Vector {
-    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Vector([0.0,  0.0]), |acc, v| {
-            acc + v
-        })
+impl<'a, T> From<&'a Vector<T>> for &'a Point<T> {
+    fn from(value: &'a Vector<T>) -> Self {
+        &value.0
     }
 }
-
 
 impl<T> From<Vector<T>> for Point<T> {
     fn from(value: Vector<T>) -> Self {
@@ -17,22 +14,21 @@ impl<T> From<Vector<T>> for Point<T> {
     }
 }
 
-
 impl<T> From<Point<T>> for Vector<T> {
     fn from(point: Point<T>) -> Self {
         Self(point)
     }
 }
 
-impl<T, K> From<&Vector<T>> for Vector<K>
+impl<F, I> From<&Vector<F>> for Vector<I>
 where
-    T: Number,
-    K: Default + Number,
+    F: Number,
+    I: Default + Number,
 {
-    fn from(vector: &Vector<T>) -> Self {
+    fn from(vector: &Vector<F>) -> Self {
         let mut new_vector = Vector::default();
         for i in 0..vector.len() {
-            new_vector[i] = K::from(vector[i]).unwrap();
+            new_vector[i] = I::from(vector[i]).unwrap();
         }
         new_vector
     }
@@ -134,5 +130,13 @@ impl<T: DivAssign<T> + Copy > Div for Vector<T> {
             new_vector[i] /= other[i];
         }
         Self(new_vector)
+    }
+}
+
+impl Sum for Vector {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Vector([0.0,  0.0]), |acc, v| {
+            acc + v
+        })
     }
 }

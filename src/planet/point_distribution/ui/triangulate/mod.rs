@@ -40,7 +40,7 @@ impl PointDistribution {
                         passed_tries.push([a_i, b_i, c_i]);
                     }
 
-                    let triangle = Triangle::from([a, b, c]);
+                    let triangle = Triangle::from([&a, &b, &c]);
                     let circle = triangle.get_circle();
                     let radius = circle.radius();
 

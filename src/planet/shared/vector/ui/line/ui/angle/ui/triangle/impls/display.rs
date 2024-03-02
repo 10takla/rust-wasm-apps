@@ -1,18 +1,16 @@
-use crate::{
-    planet::shared::vector::{
-        ui::line::ui::angle::{ui::triangle::Triangle, Angle}, FromAll, Number, Vector
-    },
-    vector_as,
+use crate::planet::shared::vector::{
+    ui::line::ui::angle::{ui::triangle::Triangle, Angle},
+    FromAll, Number, Vector,
 };
 use core::fmt;
-use std::{fmt::{Display, Formatter}};
+use std::fmt::{Display, Formatter};
 
-
-impl<T: Number + PartialOrd + FromAll + Into<i32>  + From<i32> + Into<f64> + From<f64>> Display for Triangle<T> {
+impl<'a, T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + From<f64>> Display
+    for Triangle<'a, T>
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let (a, b, c) = (self.cab.ba.a, self.abc.ba.a, self.bca.ba.a);
-
-        let t: Triangle<i32> = Triangle::from([Vector::from(&a), Vector::from(&b), Vector::from(&c)]);
+        let (a, b, c) = (Vector::from(self.cab.ba.a), Vector::from(self.abc.ba.a), Vector::from(self.bca.ba.a));
+        let t: Triangle<i32> = Triangle::from([&a, &b, &c]);
         let (a, b, c) = (t.cab.ba.a, t.abc.ba.a, t.bca.ba.a);
 
         const MAX_WIDTH: i32 = 20;
@@ -44,14 +42,14 @@ impl<T: Number + PartialOrd + FromAll + Into<i32>  + From<i32> + Into<f64> + Fro
                 (MAX_WIDTH - MAX_PADDING / 2),
                 (MAX_HEIGHT - MAX_PADDING / 2),
             ]) / (max - min);
-            
+
             [a, b, c]
-            .into_iter()
-            .map(|v| (v - min) * factor)
-            .map(|v| v + MAX_PADDING)
-            .collect::<Vec<_>>()
-            .try_into()
-            .expect("Expected a Vec of length 3")
+                .into_iter()
+                .map(|v| (*v - min) * factor)
+                .map(|v| v + MAX_PADDING)
+                .collect::<Vec<_>>()
+                .try_into()
+                .expect("Expected a Vec of length 3")
         };
         // dbg!(self.bac, self.bac.get_normal());
         let u: Vec<Vector<i32>> = self
@@ -60,11 +58,11 @@ impl<T: Number + PartialOrd + FromAll + Into<i32>  + From<i32> + Into<f64> + Fro
                 let r = t.cab;
                 let r = cab.get_normal().angle();
                 let r = (r + 180.into()) % 360.into();
-                let v = Angle::angle_to_vector(r) + cab.ba.a;
+                let v = Angle::angle_to_vector(r) + *cab.ba.a;
                 Vector::<i32>::from(&v) + MAX_PADDING
             })
             .collect();
-        
+
         let (height, width) = (MAX_HEIGHT + MAX_PADDING * 2, MAX_WIDTH + MAX_PADDING * 2);
         let field = (0..height)
             .map(|h_i| {
@@ -78,13 +76,6 @@ impl<T: Number + PartialOrd + FromAll + Into<i32>  + From<i32> + Into<f64> + Fro
                         if let Some(i) = r {
                             return ["a", "b", "c"][i];
                         }
-                        // let r: Option<usize> = vertices
-                        //     .iter()
-                        //     .map(|v| [v[0] - 1, v[1]])
-                        //     .position(|v| v == [w_i, h_i]);
-                        // if let Some(i) = r {
-                        //     return ["a", "b", "c"][i];
-                        // }
 
                         if vertices.contains(&Vector::from([w_i, h_i])) {
                             return "●";

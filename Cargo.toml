@@ -20,3 +20,6 @@ futures = "0.3.30"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[term]
+quiet = false  

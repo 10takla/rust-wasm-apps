@@ -3,31 +3,26 @@ mod impls;
 mod tests;
 pub mod ui;
 
-use std::{f64::NAN, iter::Sum};
 use super::super::Angle;
-use crate::{
-    planet::shared::{
-        point::DefaultMeasureValue,
-        vector::{Number, Vector},
-    },
-    vector_as,
+use crate::planet::shared::{
+    point::DefaultMeasureValue,
+    vector::{ui::circle::Circle, Number, Vector},
 };
-use ui::circle::Circle;
 
-#[derive(Debug)]
-pub struct Triangle<T = DefaultMeasureValue> {
-    // в центре угла центральная координата, по бокам соседние по часовой стрелке
-    pub cab: Angle<T>,
-    pub abc: Angle<T>,
-    pub bca: Angle<T>,
+#[derive(Debug, Copy, Clone)]
+pub struct Triangle<'a, T = DefaultMeasureValue> {
+    // в center угла Central координата, по бокам соседние по часовой стрелке
+    pub cab: Angle<'a, T>,
+    pub abc: Angle<'a, T>,
+    pub bca: Angle<'a, T>,
 }
 
-impl<T: Number> Triangle<T> {
+impl<'a, T: Number> Triangle<'a, T> {
     pub fn get_circle(&self) -> Circle<T> {
         let (a, b, c): (Vector, Vector, Vector) = (
-            (&self.abc.ba.b).into(),
-            (&self.abc.ba.a).into(),
-            (&self.abc.bc.b).into(),
+            self.abc.ba.b.into(),
+            self.abc.ba.a.into(),
+            self.abc.bc.b.into()
         );
         // println!("{a:?} {b:?} {c:?}");
         let (c_ab, c_bc) = ((a + b) / 2.0, (b + c) / 2.0);
@@ -85,14 +80,14 @@ impl<T: Number> Triangle<T> {
         */
         let x = (e_ab * v_bc[1] - v_ab[1] * e_bc) / (v_ab[0] * v_bc[1] - v_ab[1] * v_bc[0]);
         let mut y = (e_bc - v_bc[0] * x) / v_bc[1];
-        if f64::is_nan(y)  {
-            y = dbg!(Triangle::from([b, a , c]).get_circle().center[1]);
+        if f64::is_nan(y) {
+            y = dbg!(Triangle::from([&b, &a, &c]).get_circle().center[1]);
         }
-        
+
         let (x, y) = (T::from(x).unwrap(), T::from(y).unwrap());
         Circle {
-            point: self.abc.ba.a,
-            center: [x, y].into()
+            point: *self.abc.ba.a,
+            center: [x, y].into(),
         }
     }
 }

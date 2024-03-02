@@ -3,17 +3,17 @@ mod tests;
 mod impls;
 pub mod ui;
 
-use crate::planet::shared::{point::{DefaultMeasureValue, Point}, vector::{Number, Vector}};
+use crate::planet::shared::{point::DefaultMeasureValue, vector::{Number, Vector}};
 
 #[derive(Debug, Copy, Clone)]
-pub struct Line<T = DefaultMeasureValue> {
-    pub a: Vector<T>,
-    pub b: Vector<T>,
+pub struct Line<'a, T = DefaultMeasureValue> {
+    pub a: &'a Vector<T>,
+    pub b: &'a Vector<T>,
 }
 
-impl<T: Number> Line<T> {
+impl<'a, T: Number> Line<'a, T> {
     pub fn get_vector(&self) -> Vector<T> {
-        self.b - self.a
+        *self.b - *self.a
     }
 }
 

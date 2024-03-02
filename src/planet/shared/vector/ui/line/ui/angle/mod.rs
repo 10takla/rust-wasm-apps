@@ -8,13 +8,13 @@ use super::super::{Line, Vector};
 
 
 #[derive(Debug, Copy, Clone)]
-pub struct Angle<T = DefaultMeasureValue> {
+pub struct Angle<'a, T = DefaultMeasureValue> {
     // линии расположны от центральной вершины к соседним
-    pub ba: Line<T>,
-    pub bc: Line<T>,
+    pub ba: Line<'a, T>,
+    pub bc: Line<'a, T>,
 }
 
-impl<T: Number> Angle<T> {
+impl<'a, T: Number> Angle<'a, T> {
     pub fn angle_to_vector(angle: T) -> Vector<T> {
         let v = Vector::<f64>::from([angle.into().cos(), angle.into().sin()]);
         (&v).into()

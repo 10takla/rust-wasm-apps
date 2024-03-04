@@ -1,8 +1,8 @@
 use crate::planet::shared::vector::ui::line::ui::angle::Angle;
 use super::Triangle;
 
-impl<'a, T> IntoIterator for Triangle<'a, T> {
-    type Item = Angle<'a, T>;
+impl<T> IntoIterator for Triangle<T> {
+    type Item = Angle<T>;
     type IntoIter = std::array::IntoIter<Self::Item, 3>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -10,12 +10,12 @@ impl<'a, T> IntoIterator for Triangle<'a, T> {
     }
 }
 pub struct TriangleIterator<'a, T> {
-    iter: &'a Triangle<'a, T>,
+    iter: &'a Triangle<T>,
     count: usize,
 }
 
 impl<'a, T> Iterator for TriangleIterator<'a, T> {
-    type Item = &'a Angle<'a, T>;
+    type Item = &'a Angle<T>;
     fn next(&mut self) -> Option<Self::Item> {
         match self.count {
             0 => {
@@ -35,7 +35,7 @@ impl<'a, T> Iterator for TriangleIterator<'a, T> {
     }
 }
 
-impl<'a, T> Triangle<'a, T> {
+impl<T> Triangle<T> {
     pub fn iter(&self) -> TriangleIterator<T> {
         TriangleIterator {
             iter: self,

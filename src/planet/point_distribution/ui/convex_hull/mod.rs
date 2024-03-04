@@ -99,9 +99,9 @@ impl ConvexHull {
 
     fn get_angle(&self, p_i: usize) -> f64 {
         let triangle: Triangle = Triangle::from([
-            &self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]],
-            &self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]],
-            &self.point_distribution[p_i],
+            self.point_distribution[self.hull_edges[self.hull_edges.len() - 2]],
+            self.point_distribution[self.hull_edges[self.hull_edges.len() - 1]],
+            self.point_distribution[p_i],
         ]);
         triangle.abc.get_angle()
     }

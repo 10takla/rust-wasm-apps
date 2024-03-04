@@ -34,6 +34,16 @@ where
     }
 }
 
+impl<I: Default + Number> Vector<I> {
+    pub fn as_type(&self) -> Self {
+        let mut new_vector = Vector::default();
+        for i in 0..self.len() {
+            new_vector[i] = I::from(self[i]).unwrap();
+        }
+        new_vector
+    }
+}
+
 impl<T:> Default for Vector<T>
 where
     T: Default + Copy,

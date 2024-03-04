@@ -1,8 +1,8 @@
 use crate::planet::shared::vector::{ui::line::Line, Vector};
 
-impl<'a, T> IntoIterator for Line<'a, T> {
-    type Item = &'a Vector<T>;
-    type IntoIter = std::array::IntoIter<&'a Vector<T>, 2>;
+impl<T> IntoIterator for Line<T> {
+    type Item = Vector<T>;
+    type IntoIter = std::array::IntoIter<Vector<T>, 2>;
     
     fn into_iter(self) -> Self::IntoIter {
         [self.a, self.b].into_iter()
@@ -10,7 +10,7 @@ impl<'a, T> IntoIterator for Line<'a, T> {
 }
 
 pub struct LineIterator<'a, T> {
-    iter: &'a Line<'a, T>,
+    iter: &'a Line<T>,
     count: usize
 }
 
@@ -21,11 +21,11 @@ impl<'a, T> Iterator for LineIterator<'a, T> {
         let result = match self.count {
             0 => {
                 self.count += 1;
-                Some(self.iter.a)
+                Some(&self.iter.a)
             },
             1 => {
                 self.count += 1;
-                Some(self.iter.b)
+                Some(&self.iter.b)
             },
             _ => None
         };
@@ -33,7 +33,7 @@ impl<'a, T> Iterator for LineIterator<'a, T> {
     }
 }
 
-impl<'a, T> Line<'a, T> {
+impl<T> Line<T> {
     pub fn iter(&self) -> LineIterator<T> {
         LineIterator {
             iter: self,

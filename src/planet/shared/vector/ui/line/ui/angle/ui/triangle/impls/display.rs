@@ -5,13 +5,11 @@ use crate::planet::shared::vector::{
 use core::fmt;
 use std::fmt::{Display, Formatter};
 
-impl<'a, T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + From<f64>> Display
-    for Triangle<'a, T>
+impl<T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + From<f64>> Display
+    for Triangle<T>
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let (a, b, c) = (Vector::from(self.cab.ba.a), Vector::from(self.abc.ba.a), Vector::from(self.bca.ba.a));
-        let t: Triangle<i32> = Triangle::from([&a, &b, &c]);
-        let (a, b, c) = (t.cab.ba.a, t.abc.ba.a, t.bca.ba.a);
+        let (a, b, c) = (Vector::<i32>::from(&self.cab.ba.a), Vector::<i32>::from(&self.abc.ba.a), Vector::<i32>::from(&self.bca.ba.a));
 
         const MAX_WIDTH: i32 = 20;
         const MAX_HEIGHT: i32 = 20;
@@ -45,7 +43,7 @@ impl<'a, T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + 
 
             [a, b, c]
                 .into_iter()
-                .map(|v| (*v - min) * factor)
+                .map(|v| (v - min) * factor)
                 .map(|v| v + MAX_PADDING)
                 .collect::<Vec<_>>()
                 .try_into()
@@ -55,10 +53,9 @@ impl<'a, T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + 
         let u: Vec<Vector<i32>> = self
             .iter()
             .map(|cab| {
-                let r = t.cab;
                 let r = cab.get_normal().angle();
                 let r = (r + 180.into()) % 360.into();
-                let v = Angle::angle_to_vector(r) + *cab.ba.a;
+                let v = Angle::angle_to_vector(r) + cab.ba.a;
                 Vector::<i32>::from(&v) + MAX_PADDING
             })
             .collect();

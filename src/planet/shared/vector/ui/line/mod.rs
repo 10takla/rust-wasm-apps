@@ -6,14 +6,14 @@ pub mod ui;
 use crate::planet::shared::{point::DefaultMeasureValue, vector::{Number, Vector}};
 
 #[derive(Debug, Copy, Clone)]
-pub struct Line<'a, T = DefaultMeasureValue> {
-    pub a: &'a Vector<T>,
-    pub b: &'a Vector<T>,
+pub struct Line<T = DefaultMeasureValue> {
+    pub a: Vector<T>,
+    pub b: Vector<T>,
 }
 
-impl<'a, T: Number> Line<'a, T> {
+impl<T: Number> Line<T> {
     pub fn get_vector(&self) -> Vector<T> {
-        *self.b - *self.a
+        self.b - self.a
     }
 }
 

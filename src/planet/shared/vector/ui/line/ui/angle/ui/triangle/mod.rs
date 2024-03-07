@@ -20,9 +20,9 @@ pub struct Triangle<T = DefaultMeasureValue> {
 impl<T: Number> Triangle<T> {
     pub fn get_circle(&self) -> Circle<T> {
         let (a, b, c): (Vector, Vector, Vector) = (
-            (&self.abc.ba.b).into(),
-            (&self.abc.ba.a).into(),
-            (&self.abc.bc.b).into()
+            (&self.abc.ba.b).as_(),
+            (&self.abc.ba.a).as_(),
+            (&self.abc.bc.b).as_()
         );
         // println!("{a:?} {b:?} {c:?}");
         let (c_ab, c_bc) = ((a + b) / 2.0, (b + c) / 2.0);
@@ -84,7 +84,7 @@ impl<T: Number> Triangle<T> {
             y = dbg!(Triangle::from([b, a, c]).get_circle().center[1]);
         }
 
-        let (x, y) = (T::from(x).unwrap(), T::from(y).unwrap());
+        let (x, y) = (T::from(x), T::from(y));
         Circle {
             point: self.abc.ba.a,
             center: [x, y].into(),

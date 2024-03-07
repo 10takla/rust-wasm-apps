@@ -8,26 +8,22 @@ mod set_points_tests {
     #[wasm_bindgen_test]
     fn set_points() {
         let to_points = vec![[0.0, 0.0], [1.0, 1.0], [1.0, -1.0], [0.8, -1.0]];
-        let hull = {
-            let point_distribution = PointDistribution::from_points(to_value(&to_points).unwrap());
-            ConvexHull::from_distribution(to_value(&point_distribution).unwrap())
-        };
-
-        let points: Points = from_value(hull.point_distribution.points()).unwrap();
-        assert_eq!(points, to_points);
+        let hull = ConvexHull::from_distribution(
+            to_value(&PointDistribution::from(to_points.clone())).unwrap());
+        assert_eq!(Points::from(hull.point_distribution), to_points);
     }
 
     #[wasm_bindgen_test]
     fn set_random_points() {
         let points_count = 10;
-        let sizes = [5.0, 5.0, 5.0];
+        let sizes = [5.0, 5.0];
         let hull = {
             let point_distribution =
-                PointDistribution::set_random_points(points_count, to_value(&sizes).unwrap());
+                PointDistribution::set_random_points(points_count, sizes);
             ConvexHull::from_distribution(to_value(&point_distribution).unwrap())
         };
 
-        let points: Points = from_value(hull.point_distribution.points()).unwrap();
+        let points: Points = hull.point_distribution.into();
         assert_eq!(points.len(), points_count);
 
         points.iter().for_each(|point| {
@@ -44,16 +40,15 @@ mod convex_hull {
     #[wasm_bindgen_test]
     fn convex_hull() {
         let mut hull = {
-            let point_distribution = PointDistribution::from_points(
-                to_value(&vec![
-                    [0.0, 0.0, 0.0],
-                    [1.0, -0.2, 0.0],
-                    [2.0, 1.0, 0.0],
-                    [1.8, 2.0, 0.0],
-                    [0.7, 2.1, 0.0],
-                    [0.2, 1.6, 0.0],
-                ])
-                .unwrap(),
+            let point_distribution = PointDistribution::from(
+                vec![
+                    [0.0, 0.0],
+                    [1.0, -0.2],
+                    [2.0, 1.0],
+                    [1.8, 2.0],
+                    [0.7, 2.1],
+                    [0.2, 1.6],
+                ]
             );
             ConvexHull::from_distribution(to_value(&point_distribution).unwrap())
         };
@@ -93,10 +88,10 @@ fn get_angle() {
 #[ignore]
 fn prefomance_by_points() {
     let points_count = 10000;
-    let sizes = [5.0, 5.0, 5.0];
+    let sizes = [5.0, 5.0];
     let mut hull = {
         let point_distribution =
-            PointDistribution::set_random_points(points_count, to_value(&sizes).unwrap());
+            PointDistribution::set_random_points(points_count, sizes);
         ConvexHull::from_distribution(to_value(&point_distribution).unwrap())
     };
 

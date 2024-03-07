@@ -16,7 +16,13 @@ impl<T: Eq + Debug> From<Triangle<T>> for [Line<T>; 3] {
             let lines: [Line<T>; 2] = angle.into();
             lines
         }).flatten().collect();
-        lines.dedup();
+        lines = lines.into_iter().fold(vec![], |mut acc, line| {
+            // dbg!((&acc, &line));
+            if !acc.contains(&line) {
+                acc.push(line)
+            }
+            acc
+        });
         lines.try_into().unwrap()
     }
 }

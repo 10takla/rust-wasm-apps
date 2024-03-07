@@ -3,19 +3,15 @@ mod impls;
 mod tests;
 pub mod ui;
 
-use std::fmt::Debug;
 use super::point::{DefaultMeasureValue, Point};
 use crate::derive_deref;
-use num::{FromPrimitive, NumCast};
 use serde::Serialize;
+use std::fmt::Debug;
 use std::{
     iter::Sum,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
 };
-
-
-pub trait FromAll: From<f64> + Into<f64> + Sum + Default {}
-
+use crate::traits::as_::As;
 
 pub trait Number:
     Add<Output = Self>
@@ -29,50 +25,42 @@ pub trait Number:
     + Rem<Output = Self>
     + RemAssign
     + Copy
-    + NumCast
-    + Sum 
-    + Default 
-    + Into<f64>
+    + Sum
+    + Default
     + Debug
+    + As
 {
 }
 
-impl Number for i32 {}
-impl Number for f32 {}
-impl Number for f64 {}
+macro_rules! impl_Number_for_types {
+    ($($t:ty),+) => {
+        $(
+            impl Number for $t {}
+        )+
+    };
+}
+
+impl_Number_for_types!(
+    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64
+);
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub struct Vector<T = DefaultMeasureValue>(pub Point<T>);
-derive_deref!(Vector, 0, Point<T>, T);
-
+derive_deref!(Vector<T>, 0, Point<T>);
 
 pub type Vectors<T = DefaultMeasureValue> = Vec<Vector<T>>;
 
-#[macro_export]
-macro_rules! vector_as {
-    ($v:expr, $type:ty) => {{
-        let mut tmp = [0 as $type; 2];
-        for (i, coo) in $v.into_iter().enumerate() {
-            tmp[i] = coo.into();
-        }
-        Vector::from(tmp)
-    }};
-}
-
 impl<T> Vector<T>
-where 
+where
     T: Number,
 {
     pub fn radius(&self) -> T {
         let result = (self
             .iter()
-            .map(|&measure| {
-                let t: f64 = measure.into();
-                t.powf(2.0)
-            })
+            .map(|&measure| measure.as_::<f64>().powf(2.0))
             .sum::<f64>())
         .sqrt();
-        NumCast::from(result).unwrap()
+        result.as_()
     }
 
     pub fn scalar(&self, other: &Self) -> T {
@@ -92,13 +80,13 @@ where
     }
 
     pub fn atan(&self) -> f64 {
-        let vector: Vector<f64> = self.into();
+        let vector: Vector<f64> = self.as_();
         let result = vector[1].atan2(vector[0]);
         result
     }
 
     pub fn angle(&self) -> T {
-        NumCast::from(self.atan().to_degrees()).unwrap()
+        T::from(self.atan().to_degrees())
     }
 
     pub fn sum(&self) -> T {

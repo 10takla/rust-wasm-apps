@@ -1,15 +1,15 @@
 use crate::planet::shared::vector::{
     ui::line::ui::angle::{ui::triangle::Triangle, Angle},
-    FromAll, Number, Vector,
+    Number, Vector,
 };
 use core::fmt;
 use std::fmt::{Display, Formatter};
 
-impl<T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + From<f64>> Display
+impl<T: Number + PartialOrd + Into<i32> + From<i32> + Into<f64> + From<f64>> Display
     for Triangle<T>
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let (a, b, c) = (Vector::<i32>::from(&self.cab.ba.a), Vector::<i32>::from(&self.abc.ba.a), Vector::<i32>::from(&self.bca.ba.a));
+        let (a, b, c) = (self.cab.ba.a.as_::<i32>(), self.abc.ba.a.as_::<i32>(), self.bca.ba.a.as_::<i32>());
 
         const MAX_WIDTH: i32 = 20;
         const MAX_HEIGHT: i32 = 20;
@@ -55,8 +55,8 @@ impl<T: Number + PartialOrd + FromAll + Into<i32> + From<i32> + Into<f64> + From
             .map(|cab| {
                 let r = cab.get_normal().angle();
                 let r = (r + 180.into()) % 360.into();
-                let v = Angle::angle_to_vector(r) + cab.ba.a;
-                Vector::<i32>::from(&v) + MAX_PADDING
+                let v =  Angle::angle_to_vector(r).as_()+ cab.ba.a;
+                v.as_() + MAX_PADDING
             })
             .collect();
 

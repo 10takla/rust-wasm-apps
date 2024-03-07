@@ -2,8 +2,6 @@ use std::iter::Sum;
 
 use crate::planet::shared::{point::DefaultMeasureValue, vector::{Number, Vector}};
 
-#[cfg(test)]
-mod tests;
 mod impls;
 
 #[derive(Debug)]

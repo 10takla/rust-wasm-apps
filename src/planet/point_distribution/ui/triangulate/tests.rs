@@ -1,11 +1,11 @@
-use serde_wasm_bindgen::{from_value, to_value};
+use serde_wasm_bindgen::from_value;
 use wasm_bindgen_test::{console_log, wasm_bindgen_test};
 
 use crate::planet::point_distribution::{ui::triangulate::Triangles, PointDistribution};
 
 #[wasm_bindgen_test]
 fn get_delone() {
-    let points = PointDistribution::set_random_points(40, to_value(&[10.0, 10.0]).unwrap());
+    let points = PointDistribution::set_random_points(40, [10.0, 10.0]);
     // let points: PointDistribution = vec![[1.0, 2.0], [2.0, 3.0], [2.0, 1.0], [4.0, 2.0]].into();
     // let points: PointDistribution = vec![[1.0, 2.0], [2.0, 3.0], [2.0, 1.0], [4.0, 2.0]].into();
 

@@ -4,7 +4,6 @@ mod tests;
 use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::Triangle;
 use crate::planet::{point_distribution::PointDistribution, shared::vector::Vector};
 use serde_wasm_bindgen::to_value;
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::wasm_bindgen_test;
 

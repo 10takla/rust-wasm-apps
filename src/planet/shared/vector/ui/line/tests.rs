@@ -1,5 +1,3 @@
-use crate::planet::shared::point::Point;
-
 use super::Line;
 
 #[macro_export]
@@ -18,3 +16,10 @@ macro_rules! convert_test {
 
 // convert_test!(Line, 2, [1, 1], [2, 2]);
 
+#[test]
+fn display() {
+    let line = Line::from([[0, 8], [8, 0]]);
+    println!("{}", line);
+    let line = Line::from([[0, 0], [8, 4]]);
+    println!("{}", line);
+}

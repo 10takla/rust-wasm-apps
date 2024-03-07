@@ -8,6 +8,7 @@ impl<T: PartialEq + Ord + Copy + Number + Hash> From<Rectangle<T>> for [Point<T>
         let (a_points, b_points): ([Point<T>; 3], [Point<T>; 3]) = (value.a.into(), value.b.into());
         let points: Vec<Point<T>> = a_points.into_iter().chain(b_points.into_iter())
         .fold(vec![], |mut acc, point| {
+            // dbg!((&acc, &point)); 
             if !acc.contains(&point) {
                 acc.push(point);
             }

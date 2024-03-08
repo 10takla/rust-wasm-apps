@@ -1,30 +1,30 @@
 use super::Angle;
 use crate::planet::shared::{
     point::Point,
-    vector::{ui::line::Line, Vector},
+    vector::{ui::line::Line, Number, Vector},
 };
 
 
-impl<T> From<Angle<T>> for [Line<T>; 2] {
-    fn from(value: Angle<T>) -> Self {
+impl<T, const N: usize> From<Angle<T, N>> for [Line<T, N>; 2] {
+    fn from(value: Angle<T, N>) -> Self {
         [value.ba, value.bc]
     }
 }
 
-impl<T> From<Angle<T>> for [Vector<T>; 3] {
-    fn from(value: Angle<T>) -> Self {
+impl<T, const N: usize> From<Angle<T, N>> for [Vector<T, N>; 3] {
+    fn from(value: Angle<T, N>) -> Self {
         [value.ba.b.into(), value.ba.a.into(), value.bc.b.into()]
     }
 }
 
-impl<T> From<Angle<T>> for [Point<T>; 3] {
-    fn from(value: Angle<T>) -> Self {
+impl<T, const N: usize> From<Angle<T, N>> for [Point<T, N>; 3] {
+    fn from(value: Angle<T, N>) -> Self {
         [value.ba.b.into(), value.ba.a.into(), value.bc.b.into()]
     }
 }
 
-impl<T: Copy> From<[Line<T>; 2]> for Angle<T> {
-    fn from(lines: [Line<T>; 2]) -> Self {
+impl<T: Copy, const N: usize> From<[Line<T, N>; 2]> for Angle<T, N> {
+    fn from(lines: [Line<T, N>; 2]) -> Self {
         Self {
             ba: lines[0],
             bc: lines[1],
@@ -32,8 +32,8 @@ impl<T: Copy> From<[Line<T>; 2]> for Angle<T> {
     }
 }
 
-impl<T: Copy> From<[Vector<T>; 3]> for Angle<T> {
-    fn from(vecs: [Vector<T>; 3]) -> Self {
+impl<T: Copy, const N: usize> From<[Vector<T, N>; 3]> for Angle<T, N> {
+    fn from(vecs: [Vector<T, N>; 3]) -> Self {
         let (a, b, c) = (vecs[0], vecs[1], vecs[2]);
         Self {
             ba: [b, a].into(),
@@ -42,8 +42,8 @@ impl<T: Copy> From<[Vector<T>; 3]> for Angle<T> {
     }
 }
 
-impl<T: Copy> From<[Point<T>; 3]> for Angle<T> {
-    fn from(vecs: [Point<T>; 3]) -> Self {
+impl<T: Number, const N: usize> From<[Point<T, N>; 3]> for Angle<T, N> {
+    fn from(vecs: [Point<T, N>; 3]) -> Self {
         let (a, b, c) = (vecs[0], vecs[1], vecs[2]);
         Self {
             ba: [b, a].into(),

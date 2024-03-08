@@ -19,7 +19,22 @@ macro_rules! print_expr {
 
 #[macro_export]
 macro_rules! derive_deref {
-  ($struct_name:ident$(<$($type:tt),+>)?, $field_name:tt, $target_type:ty) => {
+    ($struct_name:ident<$($type:tt),+>, $field_name:tt, $target_type:ty, <$($t:tt)+) => {
+        impl<$($t)+ std::ops::Deref for $struct_name<$($type),+> {
+            type Target = $target_type;
+
+            fn deref(&self) -> &Self::Target {
+                &self.$field_name
+            }
+        }
+
+        impl<$($t)+ std::ops::DerefMut for $struct_name<$($type),+> {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.$field_name
+            }
+        }
+    };
+    ($struct_name:ident$(<$($type:tt),+>)?, $field_name:tt, $target_type:ty) => {
         impl$(<$($type),+>)? std::ops::Deref for $struct_name$(<$($type),+>)? {
             type Target = $target_type;
 

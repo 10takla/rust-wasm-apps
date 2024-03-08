@@ -1,21 +1,21 @@
 use crate::planet::shared::vector::{ui::line::Line, Vector};
 
-impl<T> IntoIterator for Line<T> {
-    type Item = Vector<T>;
-    type IntoIter = std::array::IntoIter<Vector<T>, 2>;
+impl<T, const N: usize> IntoIterator for Line<T, N> {
+    type Item = Vector<T, N>;
+    type IntoIter = std::array::IntoIter<Vector<T, N>, 2>;
     
     fn into_iter(self) -> Self::IntoIter {
         [self.a, self.b].into_iter()
     }
 }
 
-pub struct LineIterator<'a, T> {
-    iter: &'a Line<T>,
+pub struct LineIterator<'a, T, const N: usize> {
+    iter: &'a Line<T, N>,
     count: usize
 }
 
-impl<'a, T> Iterator for LineIterator<'a, T> {
-    type Item = &'a Vector<T>;
+impl<'a, T, const N: usize> Iterator for LineIterator<'a, T, N> {
+    type Item = &'a Vector<T, N>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let result = match self.count {
@@ -33,8 +33,8 @@ impl<'a, T> Iterator for LineIterator<'a, T> {
     }
 }
 
-impl<T> Line<T> {
-    pub fn iter(&self) -> LineIterator<T> {
+impl<T, const N: usize> Line<T, N> {
+    pub fn iter(&self) -> LineIterator<T, N> {
         LineIterator {
             iter: self,
             count: 0

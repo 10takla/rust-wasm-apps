@@ -1,41 +1,25 @@
-use crate::planet::shared::vector::{
+use crate::planet::{point_distribution::PointDistribution, shared::vector::{
     ui::line::ui::angle::{ui::triangle::Triangle, Angle},
     Number, Vector,
-};
+}};
 use core::fmt;
 use std::fmt::{Display, Formatter};
+use crate::traits::as_::As;
 
-impl<T: Number + PartialOrd + Into<i32> + From<i32> + Into<f64> + From<f64>> Display
-    for Triangle<T>
-{
+impl<T: Number> Display for Triangle<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let (a, b, c) = (self.cab.ba.a.as_::<i32>(), self.abc.ba.a.as_::<i32>(), self.bca.ba.a.as_::<i32>());
+        let (a, b, c) = (
+            self.cab.ba.a.as_::<i32>(),
+            self.abc.ba.a.as_::<i32>(),
+            self.bca.ba.a.as_::<i32>(),
+        );
 
         const MAX_WIDTH: i32 = 20;
         const MAX_HEIGHT: i32 = 20;
         const MAX_PADDING: i32 = 2;
-        let max = Vector::from([
-            [a, b, c]
-                .into_iter()
-                .max_by(|&a, &b| a[0].partial_cmp(&b[0]).unwrap())
-                .unwrap()[0],
-            [a, b, c]
-                .into_iter()
-                .max_by(|&a, &b| a[1].partial_cmp(&b[1]).unwrap())
-                .unwrap()[1],
-        ]);
-        let min = Vector::from([
-            [a, b, c]
-                .into_iter()
-                .min_by(|&a, &b| a[0].partial_cmp(&b[0]).unwrap())
-                .unwrap()[0],
-            [a, b, c]
-                .into_iter()
-                .min_by(|&a, &b| a[1].partial_cmp(&b[1]).unwrap())
-                .unwrap()[1],
-        ]);
+        let (max, min) = PointDistribution::from(vec![a, b, c]).get_box_boundary();
 
-        let vertices: [Vector<i32>; 3] = {
+        let vertices: [Vector<i32, 2>; 3] = {
             let factor: Vector<i32> = Vector::from([
                 (MAX_WIDTH - MAX_PADDING / 2),
                 (MAX_HEIGHT - MAX_PADDING / 2),
@@ -49,13 +33,12 @@ impl<T: Number + PartialOrd + Into<i32> + From<i32> + Into<f64> + From<f64>> Dis
                 .try_into()
                 .expect("Expected a Vec of length 3")
         };
-        // dbg!(self.bac, self.bac.get_normal());
-        let u: Vec<Vector<i32>> = self
+
+        let prefs: Vec<Vector<i32>> = self
             .iter()
             .map(|cab| {
-                let r = cab.get_normal().angle();
-                let r = (r + 180.into()) % 360.into();
-                let v =  Angle::angle_to_vector(r).as_()+ cab.ba.a;
+                let opposite_angle = (cab.get_normal().angle() + 180.as_()) % 360.as_();
+                let v = Angle::<T>::angle_to_vector(opposite_angle).as_() + cab.ba.a;
                 v.as_() + MAX_PADDING
             })
             .collect();
@@ -66,7 +49,7 @@ impl<T: Number + PartialOrd + Into<i32> + From<i32> + Into<f64> + From<f64>> Dis
                 (0..width)
                     .map(|w_i| {
                         let h_i = height - h_i - 1;
-                        let r: Option<usize> = u
+                        let r: Option<usize> = prefs
                             .iter()
                             .map(|v| [v[0] - 1, v[1]])
                             .position(|v| v == [w_i, h_i]);

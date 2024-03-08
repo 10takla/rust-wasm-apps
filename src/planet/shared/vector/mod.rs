@@ -5,13 +5,14 @@ pub mod ui;
 
 use super::point::{DefaultMeasureValue, Point};
 use crate::derive_deref;
+use crate::traits::as_::As;
+use serde::ser::SerializeSeq;
 use serde::Serialize;
 use std::fmt::Debug;
 use std::{
     iter::Sum,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
 };
-use crate::traits::as_::As;
 
 pub trait Number:
     Add<Output = Self>
@@ -29,6 +30,7 @@ pub trait Number:
     + Default
     + Debug
     + As
+    + PartialOrd
 {
 }
 
@@ -40,17 +42,31 @@ macro_rules! impl_Number_for_types {
     };
 }
 
-impl_Number_for_types!(
-    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64
-);
+impl_Number_for_types!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64);
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
-pub struct Vector<T = DefaultMeasureValue>(pub Point<T>);
-derive_deref!(Vector<T>, 0, Point<T>);
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Vector<T = DefaultMeasureValue, const N: usize = 2>(pub Point<T, N>);
+derive_deref!(Vector<T, N>, 0, Point<T, N>, <T, const N: usize>);
 
-pub type Vectors<T = DefaultMeasureValue> = Vec<Vector<T>>;
+impl<T, const N: usize> Serialize for Vector<T, N>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(N))?;
+        for element in &self.0 {
+            seq.serialize_element(element)?;
+        }
+        seq.end()
+    }
+}
 
-impl<T> Vector<T>
+pub type Vectors<T = DefaultMeasureValue, const N: usize = 2> = Vec<Vector<T, N>>;
+
+impl<T, const N: usize> Vector<T, N>
 where
     T: Number,
 {
@@ -80,7 +96,7 @@ where
     }
 
     pub fn atan(&self) -> f64 {
-        let vector: Vector<f64> = self.as_();
+        let vector: Vector<f64, N> = self.as_();
         let result = vector[1].atan2(vector[0]);
         result
     }

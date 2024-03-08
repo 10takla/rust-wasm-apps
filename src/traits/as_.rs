@@ -23,7 +23,6 @@ macro_rules! impl_ToPrim_for_every_types {
         }
         $(
             impl ToPrim for $t {
-
                 every_type_method!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64);
             }
         )+
@@ -39,13 +38,14 @@ macro_rules! impl_ToPrim_for_every_types {
     }
 }
 
+pub trait FromPrim: ToPrim {
+    fn from<F: ToPrim>(value: F) -> Self;
+}
+
 impl_ToPrim_for_every_types!(
     i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64
 );
 
-pub trait FromPrim: ToPrim {
-    fn from<F: ToPrim>(value: F) -> Self;
-}
 pub trait As: FromPrim {
     fn as_<T: FromPrim>(self) -> T;
 }

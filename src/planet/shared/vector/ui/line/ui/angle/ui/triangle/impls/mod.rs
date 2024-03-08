@@ -6,14 +6,14 @@ use super::Triangle;
 use crate::planet::shared::{
     point::Point,
     vector::{
-        ui::line::{ui::angle::Angle, Line}, Vector,
+        ui::line::{ui::angle::Angle, Line}, Number, Vector
     },
 };
 
-impl<T: Eq + Debug> From<Triangle<T>> for [Line<T>; 3] {
-    fn from(value: Triangle<T>) -> Self {
-        let mut lines: Vec<Line<T>> = value.into_iter().map(|angle| {
-            let lines: [Line<T>; 2] = angle.into();
+impl<T: Eq + Debug, const N: usize> From<Triangle<T, N>> for [Line<T, N>; 3] {
+    fn from(value: Triangle<T, N>) -> Self {
+        let mut lines: Vec<Line<T, N>> = value.into_iter().map(|angle| {
+            let lines: [Line<T, N>; 2] = angle.into();
             lines
         }).flatten().collect();
         lines = lines.into_iter().fold(vec![], |mut acc, line| {
@@ -26,20 +26,20 @@ impl<T: Eq + Debug> From<Triangle<T>> for [Line<T>; 3] {
         lines.try_into().unwrap()
     }
 }
-impl<T> From<Triangle<T>> for [Vector<T>; 3] {
-    fn from(value: Triangle<T>) -> Self {
+impl<T, const N: usize> From<Triangle<T, N>> for [Vector<T, N>; 3] {
+    fn from(value: Triangle<T, N>) -> Self {
         value.abc.into()
     }
 }
 
-impl<T> From<Triangle<T>> for [Point<T>; 3] {
-    fn from(value: Triangle<T>) -> Self {
+impl<T, const N: usize> From<Triangle<T, N>> for [Point<T, N>; 3] {
+    fn from(value: Triangle<T, N>) -> Self {
         value.abc.into()
     }
 }
 
-impl<T: Copy> From<[Angle<T>; 3]> for Triangle<T> {
-    fn from(angles: [Angle<T>; 3]) -> Self {
+impl<T: Copy, const N: usize> From<[Angle<T, N>; 3]> for Triangle<T, N> {
+    fn from(angles: [Angle<T, N>; 3]) -> Self {
         Self {
             abc: angles[0],
             bca: angles[1],
@@ -48,8 +48,8 @@ impl<T: Copy> From<[Angle<T>; 3]> for Triangle<T> {
     }
 }
 
-impl<T: Copy> From<[Line<T>; 3]> for Triangle<T> {
-    fn from(points: [Line<T>; 3]) -> Self {
+impl<T: Copy, const N: usize> From<[Line<T, N>; 3]> for Triangle<T, N> {
+    fn from(points: [Line<T, N>; 3]) -> Self {
         let (ab, bc, ac) = (points[0], points[1], points[2]);
         Self {
             cab: [ab, ac].into(),
@@ -59,8 +59,8 @@ impl<T: Copy> From<[Line<T>; 3]> for Triangle<T> {
     }
 }
 
-impl<T: Copy> From<[Vector<T>; 3]> for Triangle<T> {
-    fn from(vecs: [Vector<T>; 3]) -> Self {
+impl<T: Copy, const N: usize> From<[Vector<T, N>; 3]> for Triangle<T, N> {
+    fn from(vecs: [Vector<T, N>; 3]) -> Self {
         Self {
             cab: [vecs[2], vecs[0], vecs[1]].into(),
             abc: [vecs[0], vecs[1], vecs[2]].into(),
@@ -69,8 +69,8 @@ impl<T: Copy> From<[Vector<T>; 3]> for Triangle<T> {
     }
 }
 
-impl<T: Copy> From<[Point<T>; 3]> for Triangle<T> {
-    fn from(vecs: [Point<T>; 3]) -> Self {
+impl<T: Number, const N: usize> From<[Point<T, N>; 3]> for Triangle<T, N> {
+    fn from(vecs: [Point<T, N>; 3]) -> Self {
         Self {
             cab: [vecs[2], vecs[0], vecs[1]].into(),
             abc: [vecs[0], vecs[1], vecs[2]].into(),

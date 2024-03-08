@@ -10,21 +10,20 @@ use crate::planet::shared::{
 };
 
 #[derive(Debug, Copy, Clone)]
-pub struct Triangle<T = DefaultMeasureValue> {
+pub struct Triangle<T = DefaultMeasureValue, const N: usize = 2> {
     // в center угла Central координата, по бокам соседние по часовой стрелке
-    pub cab: Angle<T>,
-    pub abc: Angle<T>,
-    pub bca: Angle<T>,
+    pub cab: Angle<T, N>,
+    pub abc: Angle<T, N>,
+    pub bca: Angle<T, N>,
 }
 
 impl<T: Number> Triangle<T> {
-    pub fn get_circle(&self) -> Circle<T> {
+    pub fn get_circle(&self) -> Circle<T, 2> {
         let (a, b, c): (Vector, Vector, Vector) = (
             (&self.abc.ba.b).as_(),
             (&self.abc.ba.a).as_(),
-            (&self.abc.bc.b).as_()
+            (&self.abc.bc.b).as_(),
         );
-        // println!("{a:?} {b:?} {c:?}");
         let (c_ab, c_bc) = ((a + b) / 2.0, (b + c) / 2.0);
         /*
         {
@@ -84,9 +83,8 @@ impl<T: Number> Triangle<T> {
             y = dbg!(Triangle::from([b, a, c]).get_circle().center[1]);
         }
 
-        let (x, y) = (T::from(x), T::from(y));
         Circle {
-            point: self.abc.ba.a,
+            point: self.abc.ba.a.as_(),
             center: [x, y].into(),
         }
     }

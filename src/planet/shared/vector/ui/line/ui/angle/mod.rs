@@ -8,18 +8,18 @@ use super::super::{Line, Vector};
 
 
 #[derive(Debug, Copy, Clone)]
-pub struct Angle<T = DefaultMeasureValue> {
+pub struct Angle<T = DefaultMeasureValue, const N: usize = 2> {
     // линии расположны от центральной вершины к соседним
-    pub ba: Line<T>,
-    pub bc: Line<T>,
+    pub ba: Line<T, N>,
+    pub bc: Line<T, N>,
 }
 
-impl<T: Number> Angle<T> {
-    pub fn angle_to_vector(angle: T) -> Vector {
-        Vector::<f64>::from([angle.as_::<f64>().cos(), angle.as_::<f64>().sin()])
+impl<T: Number, const N: usize> Angle<T, N> {
+    pub fn angle_to_vector(angle: T) -> Vector<f64, 2> {
+        [angle.as_::<f64>().cos(), angle.as_::<f64>().sin()].into()
     }
     
-    pub fn get_normal(&self) -> Vector<T> {
+    pub fn get_normal(&self) -> Vector<T, N> {
         let ba = Vector::from(self.ba);
         let bc = Vector::from(self.bc);
         (bc + ba) / T::from(2)

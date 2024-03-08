@@ -1,8 +1,3 @@
-use num_traits::AsPrimitive;
-use std::ops::Add;
-
-use crate::derive_deref;
-
 use super::Vector;
 
 #[test]
@@ -15,7 +10,7 @@ fn angle() {
 
 #[test]
 fn vector_from() {
-    let vector = Vector::from([1; 2]);
+    let vector: Vector<i32> = Vector::from([1; 2]);
     {
         let v_f64: Vector<f64> = vector.as_();
         assert_eq!(*v_f64, [1.0; 2]);

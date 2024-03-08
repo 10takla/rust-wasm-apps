@@ -9,7 +9,7 @@ use crate::planet::{
 };
 use std::{f32::consts::PI, fmt::Display};
 
-impl<T: Number + PartialOrd> Display for Line<T> {
+impl<T: Number> Display for Line<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (width, height, padding) = (10, 10, 1);
 
@@ -28,7 +28,7 @@ impl<T: Number + PartialOrd> Display for Line<T> {
         let size = Vector::from([width, height]);
 
         let line: Line<i32> = {
-            let line = self.as_();
+            let line: Line<f64> = self.as_();
             let (max, min) = (max.as_(), min.as_());
             let length = Vector::from({
                 let point: Point<f64> = (max - min)
@@ -55,7 +55,7 @@ impl<T: Number + PartialOrd> Display for Line<T> {
 
         let prefs = {
             let get_normal = |line: Line<i32>| {
-                (Angle::angle_to_vector(Vector::from(line.as_::<f64>()).atan() + PI as f64) * 2.0).as_() + line.a
+                (Angle::<f64>::angle_to_vector(Vector::from(line).as_::<f64>().atan() + PI as f64) * 2.0).as_() + line.a
             };
             [get_normal(line), get_normal(line.reverse())]
         };

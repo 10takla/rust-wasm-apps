@@ -4,42 +4,45 @@ use super::{Number, Vector};
 use crate::planet::shared::point::Point;
 use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign}};
 
-impl<T: Number> Vector<T> {
-    pub fn as_<I: Number>(self) -> Vector<I> {
-        let point: Point<I> = self.into_iter().map(|measure| measure.as_::<I>()).collect::<Vec<I>>().try_into().unwrap();
-        Vector::from(point)
-    }
-}
-
-impl<'a, T> From<&'a Vector<T>> for &'a Point<T> {
-    fn from(value: &'a Vector<T>) -> Self {
-        &value.0
-    }
-}
-
-impl<T> From<Vector<T>> for Point<T> {
-    fn from(value: Vector<T>) -> Self {
-        value.0
-    }
-}
-
-impl<T> From<Point<T>> for Vector<T> {
-    fn from(point: Point<T>) -> Self {
-        Self(point)
-    }
-}
-
-impl<T:> Default for Vector<T>
+impl<T, const N: usize> Default for Vector<T, N>
 where
     T: Default + Copy,
 {
     fn default() -> Self {
-        let default_value = T::default();
-        Self([default_value, default_value])
+        Self([T::default(); N])
     }
 }
 
-impl<T: AddAssign<T> + Copy > Add<T> for Vector<T> {
+impl<T: Number, const N: usize> Vector<T, N> {
+    pub fn as_<I: Number>(self) -> Vector<I, N> {
+        let point: Point<I, N> = self.into_iter().map(|measure| measure.as_::<I>()).collect::<Vec<I>>().try_into().unwrap();
+        Vector::from(point)
+    }
+}
+
+//Froms
+impl<'a, T, const N: usize> From<&'a Vector<T, N>> for &'a Point<T, N> {
+    fn from(value: &'a Vector<T, N>) -> Self {
+        &value.0
+    }
+}
+
+impl<T, const N: usize> From<Vector<T, N>> for Point<T, N> {
+    fn from(value: Vector<T, N>) -> Self {
+        value.0
+    }
+}
+
+impl<F: Number, I: Number, const N: usize> From<Point<F, N>> for Vector<I, N> {
+    fn from(point: Point<F, N>) -> Self {
+        Self(
+            point.into_iter().map(|measure| measure.as_()).collect::<Vec<I>>().try_into().unwrap()
+        )
+    }
+}
+
+// Arithmetic
+impl<T: AddAssign<T> + Copy, const N: usize> Add<T> for Vector<T, N> {
     type Output = Self;
 
     fn add(self, other: T) -> Self {
@@ -51,7 +54,7 @@ impl<T: AddAssign<T> + Copy > Add<T> for Vector<T> {
     }
 }
 
-impl<T: AddAssign<T> + Copy > Add for Vector<T> {
+impl<T: AddAssign<T> + Copy, const N: usize> Add for Vector<T, N> {
     type Output = Self;
     fn add(self, other: Self) -> Self {
         let mut new_vector = *self;
@@ -62,7 +65,7 @@ impl<T: AddAssign<T> + Copy > Add for Vector<T> {
     }
 }
 
-impl<T: SubAssign<T> + Copy > Sub<T> for Vector<T> {
+impl<T: SubAssign<T> + Copy, const N: usize> Sub<T> for Vector<T, N> {
     type Output = Self;
     fn sub(self, other: T) -> Self {
         let mut new_vector = *self;
@@ -73,7 +76,7 @@ impl<T: SubAssign<T> + Copy > Sub<T> for Vector<T> {
     }
 }
 
-impl<T: SubAssign<T> + Copy > Sub for Vector<T> {
+impl<T: SubAssign<T> + Copy, const N: usize> Sub for Vector<T, N> {
     type Output = Self;
     fn sub(self, other: Self) -> Self {
         let mut new_vector = *self;
@@ -84,7 +87,7 @@ impl<T: SubAssign<T> + Copy > Sub for Vector<T> {
     }
 }
 
-impl<T: MulAssign<T> + Copy > Mul<T> for Vector<T> {
+impl<T: MulAssign<T> + Copy, const N: usize> Mul<T> for Vector<T, N> {
     type Output = Self;
     fn mul(self, other: T) -> Self {
         let mut new_vector = *self;
@@ -95,7 +98,7 @@ impl<T: MulAssign<T> + Copy > Mul<T> for Vector<T> {
     }
 }
 
-impl<T: MulAssign<T> + Copy > Mul for Vector<T> {
+impl<T: MulAssign<T> + Copy, const N: usize> Mul for Vector<T, N> {
     type Output = Self;
     fn mul(self, other: Self) -> Self {
         let mut new_vector = *self;
@@ -106,7 +109,7 @@ impl<T: MulAssign<T> + Copy > Mul for Vector<T> {
     }
 }
 
-impl<T: DivAssign<T> + Copy > Div<T> for Vector<T> {
+impl<T: DivAssign<T> + Copy, const N: usize> Div<T> for Vector<T, N> {
     type Output = Self;
     fn div(self, other: T) -> Self {
         let mut new_vector = *self;
@@ -117,7 +120,7 @@ impl<T: DivAssign<T> + Copy > Div<T> for Vector<T> {
     }
 }
 
-impl<T: DivAssign<T> + Copy > Div for Vector<T> {
+impl<T: DivAssign<T> + Copy, const N: usize> Div for Vector<T, N> {
     type Output = Self;
     fn div(self, other: Self) -> Self {
         let mut new_vector = *self;
@@ -128,9 +131,9 @@ impl<T: DivAssign<T> + Copy > Div for Vector<T> {
     }
 }
 
-impl Sum for Vector {
+impl<T: Number, const N: usize> Sum for Vector<T, N> {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Vector([0.0,  0.0]), |acc, v| {
+        iter.fold(Vector::<T, N>::default(), |acc, v| {
             acc + v
         })
     }

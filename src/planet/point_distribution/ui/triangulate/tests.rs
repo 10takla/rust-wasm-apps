@@ -5,11 +5,11 @@ use crate::planet::point_distribution::{ui::triangulate::Triangles, PointDistrib
 
 #[wasm_bindgen_test]
 fn get_delone() {
-    let points = PointDistribution::set_random_points(40, [10.0, 10.0]);
+    let pd = PointDistribution::set_random_points(40, [10.0, 10.0]);
     // let points: PointDistribution = vec![[1.0, 2.0], [2.0, 3.0], [2.0, 1.0], [4.0, 2.0]].into();
     // let points: PointDistribution = vec![[1.0, 2.0], [2.0, 3.0], [2.0, 1.0], [4.0, 2.0]].into();
 
-    let triangles: Triangles = from_value(points.get_triangles()).unwrap();
+    // let triangles: Triangles = from_value(pd.get_triangles()).unwrap();
     // console_log!("{:?}", triangles);
 }
 

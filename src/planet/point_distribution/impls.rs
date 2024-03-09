@@ -1,6 +1,13 @@
 use crate::planet::shared::vector::{Number, Vector};
 use super::{PointDistribution, Points, Vectors};
 
+impl<F: Number, const N: usize> PointDistribution<F, N> {
+    pub fn as_<I: Number>(&self) -> PointDistribution<I, N> {
+        let vecs: Vec<Vector<I, N>> = self.iter().map(|vector| vector.as_()).collect();
+        vecs.into()
+    }
+}
+
 impl<T, const N: usize> From<Vectors<T, N>> for PointDistribution<T, N> {
     fn from(points: Vectors<T, N>) -> Self {
         Self(points)

@@ -1,7 +1,11 @@
 #[cfg(test)]
 mod tests;
 
+use crate::planet::shared::point::{DefaultMeasureValue, Point};
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::ui::rectangle::Rectangle;
 use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::Triangle;
+use crate::planet::shared::vector::ui::line::ui::angle::Angle;
+use crate::planet::shared::vector::Number;
 use crate::planet::{point_distribution::PointDistribution, shared::vector::Vector};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::JsValue;
@@ -31,9 +35,7 @@ impl PointDistribution {
                     continue;
                 }
                 for &(c_i, c) in points.iter() {
-                    if [a_i, b_i].contains(&c_i)
-                    // || PointDistribution::is_has_tries(&passed_tries, a_i, b_i, c_i)
-                    {
+                    if [a_i, b_i].contains(&c_i) {
                         continue;
                     } else {
                         passed_tries.push([a_i, b_i, c_i]);
@@ -74,25 +76,43 @@ impl PointDistribution {
     }
 }
 
-struct Delone {
-    points: PointDistribution,
-    triangles: Triangles,
-}
+impl PointDistribution {
+    pub fn triangulate(self) {
+        let non_ind_vecs = |vecs: &Vec<(usize, Vector)>| -> Vec<Vector> {
+            vecs.into_iter().map(|(_, vec)| *vec).collect()
+        };
+        let points = self.sort_points_by_min();
+        let start_triangle = Triangle::from(non_ind_vecs(&points[0..=2].to_vec()));
+        let next_vec = points[3].1;
 
-impl Delone {
-    pub fn tick(&mut self) {
-        if self.triangles.len() == 0 {
-            // self.points = self.points.sort_points_by_min();
-        } else {
-        }
+        let tri_points: [Vector; 3] = start_triangle.into();
+        let nearest_vec = tri_points
+            .into_iter()
+            .min_by(|&a, &b| {
+                let [a, b] = [a, b]
+                    .map(|v| (next_vec - v).radius().abs())
+                    .try_into()
+                    .unwrap();
+                a.partial_cmp(&b).unwrap()
+            })
+            .unwrap();
+
+        tri_points
+            .into_iter()
+            .filter(|&v| v != nearest_vec)
+            .for_each(|oth_v| {
+                let angle = Angle::from([next_vec, nearest_vec, oth_v]);
+                (Vector::from(angle.ba.reverse()) * Vector::from(angle.ba.reverse()));
+                // let angle_value = dbg!(angle.get_angle());
+            })
+
+        // Rectangle::from((start_triangle, next_point.1));
     }
 }
 
-#[wasm_bindgen_test]
+#[test]
 fn delone() {
-    // let delone = Delone{
-    //     points: PointDistribution::set_random_points(10, to_value(&[1.0, 1.0]).unwrap()),
-    //     triangles: vec![]
-    // };
-    // delone.tick();
+    let pd = PointDistribution::from(vec![[0, 0], [0, 5], [-2, 3], [6, 3]]).as_::<f64>();
+
+    // let tries = pd.traiangulate();
 }

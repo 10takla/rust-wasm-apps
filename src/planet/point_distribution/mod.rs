@@ -40,21 +40,21 @@ derive_deref!(PointDistribution<T, N>, 0, Vectors<T, N>, <T, const N: usize>);
 
 impl<T: Number + SampleUniform, const N: usize> PointDistribution<T, N> {
     pub fn set_random_points(point_count: usize, sizes: Point<T, N>) -> Self {
-        let points: Points<T, N> = vec![
-            {
+        let points: Points<T, N> = (0..point_count)
+            .into_iter()
+            .map(|_| {
                 let start = 0_i32.as_();
                 let mut measures = [start; N];
                 for i in 0..N {
                     measures[i] = if sizes[i] != start {
-                        rand::thread_rng().gen_range(start..sizes[i])
+                     rand::thread_rng().gen_range(start..sizes[i])
                     } else {
                         start
                     }
                 }
                 measures
-            };
-            point_count
-        ];
+            })
+            .collect();
         points.into()
     }
 }

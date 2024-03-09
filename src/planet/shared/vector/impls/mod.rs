@@ -33,11 +33,9 @@ impl<T, const N: usize> From<Vector<T, N>> for Point<T, N> {
     }
 }
 
-impl<F: Number, I: Number, const N: usize> From<Point<F, N>> for Vector<I, N> {
+impl<F: Number, const N: usize> From<Point<F, N>> for Vector<F, N> {
     fn from(point: Point<F, N>) -> Self {
-        Self(
-            point.into_iter().map(|measure| measure.as_()).collect::<Vec<I>>().try_into().unwrap()
-        )
+        Self(point)
     }
 }
 

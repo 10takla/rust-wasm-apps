@@ -85,7 +85,7 @@ impl<T: Number> Triangle<T> {
 
         Circle {
             point: self.abc.ba.a.as_(),
-            center: [x, y].into(),
+            center: Vector([x, y]).as_(),
         }
     }
 }

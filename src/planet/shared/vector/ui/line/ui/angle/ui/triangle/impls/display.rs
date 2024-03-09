@@ -73,7 +73,6 @@ impl<T: Number> Display for Triangle<T> {
             })
             .collect::<Vec<_>>()
             .join("\n");
-
         write!(f, "{}", field)
     }
 }

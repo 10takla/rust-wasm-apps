@@ -78,3 +78,23 @@ impl<T: Number, const N: usize> From<[Point<T, N>; 3]> for Triangle<T, N> {
         }
     }
 }
+
+impl<T: Number, const N: usize> From<Vec<Vector<T, N>>> for Triangle<T, N> {
+    fn from(vecs: Vec<Vector<T, N>>) -> Self {
+        Self {
+            cab: [vecs[2], vecs[0], vecs[1]].into(),
+            abc: [vecs[0], vecs[1], vecs[2]].into(),
+            bca: [vecs[1], vecs[2], vecs[0]].into(),
+        }
+    }
+}
+
+impl<T: Number, const N: usize> From<Vec<Point<T, N>>> for Triangle<T, N> {
+    fn from(vecs: Vec<Point<T, N>>) -> Self {
+        Self {
+            cab: [vecs[2], vecs[0], vecs[1]].into(),
+            abc: [vecs[0], vecs[1], vecs[2]].into(),
+            bca: [vecs[1], vecs[2], vecs[0]].into(),
+        }
+    }
+}

@@ -9,12 +9,10 @@ use crate::traits::as_::As;
 use crate::{derive_deref, planet::shared::point::Points};
 use rand::distributions::uniform::SampleUniform;
 use rand::Rng;
-use serde::Serialize;
-use serde_wasm_bindgen::{from_value, to_value};
 use std::cmp::Ordering;
 
 // #[wasm_bindgen]
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Clone)]
 pub struct PointDistribution<T = DefaultMeasureValue, const N: usize = 2>(Vectors<T, N>);
 derive_deref!(PointDistribution<T, N>, 0, Vectors<T, N>, <T, const N: usize>);
 
@@ -101,7 +99,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
 
     pub fn sort_points_by_max(&self) -> Vec<(usize, Vector<T, N>)> {
         let mut new_points: Vec<(usize, Vector<T, N>)> =
-            self.iter().enumerate().map(|(i, &p)| (i, p)).collect();
+            self.iter().enumerate().map(|(i, p)| (i, **p)).collect();
         new_points.sort_by(|&(_, a), &(_, b)| {
             if *a > *b {
                 return Ordering::Less;
@@ -120,7 +118,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
 
     pub fn sort_points_by_min(&self) -> Vec<(usize, Vector<T, N>)> {
         let mut new_points: Vec<(usize, Vector<T, N>)> =
-            self.iter().enumerate().map(|(i, &p)| (i, p)).collect();
+            self.iter().enumerate().map(|(i, p)| (i, **p)).collect();
         new_points.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap());
         new_points
     }

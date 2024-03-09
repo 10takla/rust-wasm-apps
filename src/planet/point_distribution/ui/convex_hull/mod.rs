@@ -24,7 +24,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
     fn get_next_point(&self, hull_edges: &Vec<usize>) -> usize {
         let hull_edges_len = hull_edges.len();
         let n_p_i = hull_edges[hull_edges_len - 1];
-        let n_p = self[n_p_i];
+        let n_p = self[n_p_i].clone();
 
         let points_width_ids = self.iter();
 
@@ -48,10 +48,10 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
                 points_width_ids
                     .enumerate()
                     .filter(|&(i, _)| i != n_p_i)
-                    .min_by(|&(_, &b), &(_, &c)| {
+                    .min_by(|&(_, b), &(_, c)| {
                         let [b_angle, c_angle] = [
-                            (b - n_p).atan(),
-                            (c - n_p).atan(),
+                            (**b - *n_p).atan(),
+                            (**c - *n_p).atan(),
                         ];
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
@@ -62,9 +62,9 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
     }
     fn get_angle(&self, hull_edges: &Vec<usize>, p_i: usize) -> T {
         Angle::from([
-            self[hull_edges[hull_edges.len() - 2]],
-            self[hull_edges[hull_edges.len() - 1]],
-            self[p_i],
+            self[hull_edges[hull_edges.len() - 2]].clone(),
+            self[hull_edges[hull_edges.len() - 1]].clone(),
+            self[p_i].clone(),
         ]).get_angle()
     }
 }

@@ -1,24 +1,17 @@
-use std::{future::Future, thread, time::Instant};
+use std::ops::Deref;
 
-use crate::planet::{
-    point_distribution::PointDistribution,
-    shared::{point::Points, vector::Vector},
-};
-use futures::{executor::block_on, future::{join_all, select_all}, join};
-use rand::Rng;
-use serde_wasm_bindgen::to_value;
-use wasm_bindgen_test::{console_log, wasm_bindgen_test};
+use crate::planet::point_distribution::PointDistribution;
 
 impl PointDistribution {
     pub fn normalize_points(&self) -> Vec<f64> {
         let r = self
             .iter()
             .enumerate()
-            .map(|(i, &target)| {
+            .map(|(i, target)| {
                 let s: f64 = self
                     .iter()
                     .skip(i)
-                    .map(|&other| (other - target).angle())
+                    .map(|other| (**other - **target).angle())
                     .sum();
                 s / self.len() as f64
             })

@@ -2,7 +2,7 @@ mod display;
 mod iterator;
 mod ordering;
 
-use std::{ops::SubAssign, rc::Rc};
+use std::{ops::{Deref, SubAssign}, rc::Rc};
 
 use super::Line;
 use crate::planet::shared::{
@@ -35,7 +35,14 @@ impl<T, const N: usize> From<Line<T, N>> for [Rc<Vector<T, N>>; 2] {
     }
 }
 
-impl<T: Copy + SubAssign, const N: usize> From<Line<T, N>> for Vector<T, N> {
+impl<T: Copy, const N: usize> From<Line<T, N>> for [Vector<T, N>; 2] {
+    fn from(line: Line<T, N>) -> Self {
+        [*line.a, *line.b]
+    }
+}
+
+
+impl<T: Number, const N: usize> From<Line<T, N>> for Vector<T, N> {
     fn from(line: Line<T, N>) -> Self {
         *line.b - *line.a
     }
@@ -44,8 +51,17 @@ impl<T: Copy + SubAssign, const N: usize> From<Line<T, N>> for Vector<T, N> {
 impl<T: Copy, const N: usize> From<[Rc<Vector<T, N>>; 2]> for Line<T, N> {
     fn from(vecs: [Rc<Vector<T, N>>; 2]) -> Self {
         Self {
-            a: Rc::clone(&vecs[0]),
-            b: Rc::clone(&vecs[1]),
+            a: vecs[0].clone(),
+            b: vecs[1].clone(),
+        }
+    }
+}
+
+impl<T: Copy, const N: usize> From<[Vector<T, N>; 2]> for Line<T, N> {
+    fn from(vecs: [Vector<T, N>; 2]) -> Self {
+        Self {
+            a: Rc::new(vecs[0]),
+            b: Rc::new(vecs[1]),
         }
     }
 }

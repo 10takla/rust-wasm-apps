@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests;
 
+use std::ops::Deref;
+use std::rc::Rc;
+
 use crate::planet::shared::point::{DefaultMeasureValue, Point};
 use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::ui::rectangle::Rectangle;
 use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::Triangle;
@@ -28,7 +31,7 @@ impl PointDistribution {
     pub fn get_triangles(&self) -> JsValue {
         let mut triangles: Triangles = vec![];
         let mut passed_tries: Triangles = vec![];
-        let points: Vec<(usize, Vector)> = self.iter().enumerate().map(|(i, &p)| (i, p)).collect();
+        let points: Vec<(usize, &Rc<Vector>)> = self.iter().enumerate().map(|(i, p)| (i, p)).collect();
         for &(a_i, a) in points.iter() {
             for &(b_i, b) in points.iter() {
                 if a_i == b_i {
@@ -50,7 +53,7 @@ impl PointDistribution {
                         if [a_i, b_i, c_i].contains(&d_i) {
                             continue;
                         }
-                        let distance = (d - circle.center).radius();
+                        let distance = (**d - *circle.center).radius();
                         if distance < radius {
                             is_triangle = false;
                             break;
@@ -78,8 +81,8 @@ impl PointDistribution {
 
 impl PointDistribution {
     pub fn triangulate(self) {
-        let non_ind_vecs = |vecs: &Vec<(usize, Vector)>| -> Vec<Vector> {
-            vecs.into_iter().map(|(_, vec)| *vec).collect()
+        let non_ind_vecs = |vecs: &Vec<(usize, Vector)>| -> Vec<Rc<Vector>> {
+            vecs.into_iter().map(|(_, vec)| Rc::new(*vec)).collect()
         };
         let points = self.sort_points_by_min();
         let start_triangle = Triangle::from(non_ind_vecs(&points[0..=2].to_vec()));

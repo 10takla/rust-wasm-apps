@@ -1,8 +1,10 @@
+use std::rc::Rc;
+
 use crate::planet::shared::vector::{ui::line::Line, Vector};
 
 impl<T, const N: usize> IntoIterator for Line<T, N> {
-    type Item = Vector<T, N>;
-    type IntoIter = std::array::IntoIter<Vector<T, N>, 2>;
+    type Item = Rc<Vector<T, N>>;
+    type IntoIter = std::array::IntoIter<Self::Item, 2>;
     
     fn into_iter(self) -> Self::IntoIter {
         [self.a, self.b].into_iter()
@@ -15,7 +17,7 @@ pub struct LineIterator<'a, T, const N: usize> {
 }
 
 impl<'a, T, const N: usize> Iterator for LineIterator<'a, T, N> {
-    type Item = &'a Vector<T, N>;
+    type Item = &'a Rc<Vector<T, N>>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let result = match self.count {

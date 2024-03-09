@@ -3,13 +3,15 @@ mod impls;
 mod tests;
 pub mod ui;
 
+use std::rc::Rc;
+
 use super::super::Angle;
 use crate::planet::shared::{
     point::DefaultMeasureValue,
     vector::{ui::circle::Circle, Number, Vector},
 };
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Triangle<T = DefaultMeasureValue, const N: usize = 2> {
     // в center угла Central координата, по бокам соседние по часовой стрелке
     pub cab: Angle<T, N>,
@@ -84,8 +86,8 @@ impl<T: Number> Triangle<T> {
         }
 
         Circle {
-            point: self.abc.ba.a.as_(),
-            center: Vector([x, y]).as_(),
+            point: Rc::new(self.abc.ba.a.as_()),
+            center: Rc::new(Vector([x, y]).as_()),
         }
     }
 }

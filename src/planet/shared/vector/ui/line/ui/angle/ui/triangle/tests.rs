@@ -6,7 +6,7 @@ use crate::planet::shared::{
 #[test]
 fn get_circle() {
     let check = |v1: [Point; 3], v| {    
-        assert_eq!(Triangle::from(v1).get_circle().center, Vector(v));
+        assert_eq!(*Triangle::from(v1).get_circle().center, Vector(v));
     };
     check([[0.0, 0.0], [3.0, 3.0], [6.0, 0.0]], [3.0, 0.0]);
     check([[1.5, 1.5], [2.5, 2.5], [2.5, 0.5]], [2.5, 1.5]);

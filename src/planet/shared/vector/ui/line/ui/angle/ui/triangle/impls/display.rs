@@ -3,7 +3,7 @@ use crate::planet::{point_distribution::PointDistribution, shared::vector::{
     Number, Vector,
 }};
 use core::fmt;
-use std::fmt::{Display, Formatter};
+use std::{fmt::{Display, Formatter}, ops::Deref};
 use crate::traits::as_::As;
 
 impl<T: Number> Display for Triangle<T> {
@@ -38,7 +38,7 @@ impl<T: Number> Display for Triangle<T> {
             .iter()
             .map(|cab| {
                 let opposite_angle = (cab.get_normal().angle() + 180.as_()) % 360.as_();
-                let v = Angle::<T>::angle_to_vector(opposite_angle).as_() + cab.ba.a;
+                let v = Angle::<T>::angle_to_vector(opposite_angle).as_() + *cab.ba.a.clone();
                 v.as_() + MAX_PADDING
             })
             .collect();

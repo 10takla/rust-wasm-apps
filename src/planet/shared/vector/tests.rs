@@ -67,4 +67,16 @@ fn perfomance_vector_system() {
     }
     to_pref!(
         "create items" => {
-            let vectogit
+            let vector = Vector::from([1; 3]);
+            let t = Triangle::from([vector; 3]);
+            let t = Angle::from([vector; 3]);
+            let t = Line::from([vector; 2]);
+        },
+        "create circle from traingle" => {
+            Triangle::from([[2.0, 3.0], [4.0, 8.0], [1.0, 1.0]]).get_circle();
+        },
+        "trinagulate" => {
+            PointDistribution::set_random_points(2000, [1.0; 2]).triangulate();
+        }
+    );
+}

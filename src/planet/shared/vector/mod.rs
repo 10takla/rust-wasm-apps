@@ -9,6 +9,7 @@ use crate::traits::as_::As;
 use serde::ser::SerializeSeq;
 use serde::Serialize;
 use std::fmt::Debug;
+use std::rc::Rc;
 use std::{
     iter::Sum,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
@@ -64,7 +65,7 @@ where
     }
 }
 
-pub type Vectors<T = DefaultMeasureValue, const N: usize = 2> = Vec<Vector<T, N>>;
+pub type Vectors<T = DefaultMeasureValue, const N: usize = 2> = Vec<Rc<Vector<T, N>>>;
 
 impl<T, const N: usize> Vector<T, N>
 where

@@ -15,6 +15,6 @@ pub struct Line<T = DefaultMeasureValue, const N: usize = 2> {
 
 impl<T: Copy, const N: usize> Line<T, N> {
     pub fn reverse(&self) -> Line<T, N> {
-        Line::from([Rc::clone(&self.b), Rc::clone(&self.a)])
+        Line::from([self.b.clone(), self.a.clone()])
     }
 }

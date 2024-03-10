@@ -5,9 +5,9 @@ use super::{Number, Vector};
 use crate::planet::shared::point::Point;
 use std::{
     iter::Sum,
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
-    rc::Rc,
+    ops::{Add, Div, Mul, Sub},
 };
+use crate::traits::of_to::To;
 
 impl<T, const N: usize> Default for Vector<T, N>
 where
@@ -26,7 +26,7 @@ impl<T: Number, const N: usize> Vector<T, N> {
             .collect::<Vec<I>>()
             .try_into()
             .unwrap();
-        Vector::from(point)
+        point.to()
     }
 }
 

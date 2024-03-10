@@ -5,22 +5,23 @@ use crate::planet::{point_distribution::PointDistribution, shared::vector::{
 use core::fmt;
 use std::{fmt::{Display, Formatter}, ops::Deref};
 use crate::traits::as_::As;
+use crate::traits::of_to::Of;
 
 impl<T: Number> Display for Triangle<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let (a, b, c) = (
+        let [a, b, c] = [
             self.cab.ba.a.as_::<i32>(),
             self.abc.ba.a.as_::<i32>(),
             self.bca.ba.a.as_::<i32>(),
-        );
+        ];
 
         const MAX_WIDTH: i32 = 20;
         const MAX_HEIGHT: i32 = 20;
         const MAX_PADDING: i32 = 2;
-        let (max, min) = PointDistribution::from(vec![a, b, c]).get_box_boundary();
+        let [max, min] = PointDistribution::of(vec![a, b, c]).get_box_boundary();
 
         let vertices: [Vector<i32, 2>; 3] = {
-            let factor: Vector<i32> = Vector::from([
+            let factor: Vector<i32> = Vector::of([
                 (MAX_WIDTH - MAX_PADDING / 2),
                 (MAX_HEIGHT - MAX_PADDING / 2),
             ]) / (max - min);
@@ -43,7 +44,7 @@ impl<T: Number> Display for Triangle<T> {
             })
             .collect();
 
-        let (height, width) = (MAX_HEIGHT + MAX_PADDING * 2, MAX_WIDTH + MAX_PADDING * 2);
+        let [height, width] = [MAX_HEIGHT + MAX_PADDING * 2, MAX_WIDTH + MAX_PADDING * 2];
         let field = (0..height)
             .map(|h_i| {
                 (0..width)
@@ -57,7 +58,7 @@ impl<T: Number> Display for Triangle<T> {
                             return ["a", "b", "c"][i];
                         }
 
-                        if vertices.contains(&Vector::from([w_i, h_i])) {
+                        if vertices.contains(&Vector::of([w_i, h_i])) {
                             return "●";
                         }
 

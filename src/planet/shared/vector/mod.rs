@@ -103,7 +103,7 @@ where
     }
 
     pub fn angle(&self) -> T {
-        T::from(self.atan().to_degrees())
+        self.atan().to_degrees().as_()
     }
 
     pub fn sum(&self) -> T {

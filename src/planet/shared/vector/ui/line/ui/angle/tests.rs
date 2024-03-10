@@ -1,4 +1,5 @@
 use crate::{convert_test, planet::shared::{point::Point, vector::ui::line::{ui::angle::Angle, Line}}};
+use crate::traits::of_to::Of;
 
 mod from_lines {
     use super::*;
@@ -9,10 +10,10 @@ mod from_lines {
     //     let points = [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]];
     
     //     let get_angle = |ab: [usize; 2], bc: [usize; 2]| {
-    //         let (ab, bc) = (
+    //         let [ab, bc] = [
     //             Line::from([points[ab[0]], points[ab[1]]]),
     //             Line::from([points[bc[0]], points[bc[1]]])
-    //         );
+    //         ];
     //         Angle::from([ab, bc])
     //     };
     
@@ -26,10 +27,10 @@ mod from_lines {
     //     let points = [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [2.0, 1.0]];
     
     //     let get_angle = |ab: [usize; 2], bc: [usize; 2]| {
-    //         let (ab, bc) = (
+    //         let [ab, bc] = [
     //             Line::from([points[ab[0]], points[ab[1]]]),
     //             Line::from([points[bc[0]], points[bc[1]]])
-    //         );
+    //         ];
     //         Angle::from([ab, bc])
     //     };
     

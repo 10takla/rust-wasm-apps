@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests;
 
+use crate::traits::of_to::Of;
 use crate::planet::{point_distribution::PointDistribution, shared::vector::{ui::line::ui::angle::Angle, Number}};
 
 impl<T: Number, const N: usize> PointDistribution<T, N> {
@@ -40,7 +41,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
                         }
                     })
                     .max_by(|&(b_i, _), &(c_i, _)| {
-                        let (b_angle, c_angle) = (self.get_angle(hull_edges, b_i), self.get_angle(hull_edges, c_i));
+                        let [b_angle, c_angle] = [self.get_angle(hull_edges, b_i), self.get_angle(hull_edges, c_i)];
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
                     .unwrap()
@@ -61,7 +62,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
         next_p.0
     }
     fn get_angle(&self, hull_edges: &Vec<usize>, p_i: usize) -> T {
-        Angle::from([
+        Angle::of([
             self[hull_edges[hull_edges.len() - 2]].clone(),
             self[hull_edges[hull_edges.len() - 1]].clone(),
             self[p_i].clone(),

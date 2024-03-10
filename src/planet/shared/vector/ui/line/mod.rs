@@ -4,7 +4,7 @@ mod impls;
 pub mod ui;
 
 use std::rc::Rc;
-
+use crate::traits::of_to::Of;
 use crate::planet::shared::{point::DefaultMeasureValue, vector::Vector};
 
 #[derive(Debug, Clone)]
@@ -15,6 +15,6 @@ pub struct Line<T = DefaultMeasureValue, const N: usize = 2> {
 
 impl<T: Copy, const N: usize> Line<T, N> {
     pub fn reverse(&self) -> Line<T, N> {
-        Line::from([self.b.clone(), self.a.clone()])
+        Line::of([self.b.clone(), self.a.clone()])
     }
 }

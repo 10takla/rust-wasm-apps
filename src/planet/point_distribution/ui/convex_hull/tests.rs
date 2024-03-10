@@ -12,7 +12,7 @@ fn set_random_points() {
     
     assert_eq!(pd.len(), points_count);
 
-    Points::from(pd).into_iter().for_each(|point| {
+    Points::of(pd).into_iter().for_each(|point| {
         point.into_iter().enumerate().for_each(|(i, measure)| {
             assert!(measure <= sizes[i]);
         })
@@ -21,7 +21,7 @@ fn set_random_points() {
 
 #[test]
 fn convex_hull() {
-    let pd = PointDistribution::<f64>::from(vec![
+    let pd = PointDistribution::<f64>::of(vec![
         [0.0, 0.0],
         [1.0, -0.2],
         [2.0, 1.0],
@@ -34,7 +34,7 @@ fn convex_hull() {
 
 #[test]
 fn get_angle() {
-    let pd = PointDistribution::from(vec![[-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]]);
+    let pd = PointDistribution::of(vec![[-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]]);
     assert_eq!(pd.get_angle(&vec![0, 1], 2), 180.0);
 }
 

@@ -1,4 +1,5 @@
 use std::{any::type_name, mem, rc::Rc, time::Instant};
+use crate::traits::of_to::Of;
 
 use crate::{
     planet::{
@@ -20,7 +21,7 @@ fn angle() {
 
 #[test]
 fn vector_from() {
-    let vector: Vector<i32> = Vector::from([1; 2]);
+    let vector: Vector<i32> = Vector::of([1; 2]);
     {
         let v_f64: Vector<f64> = vector.as_();
         assert_eq!(*v_f64, [1.0; 2]);
@@ -32,10 +33,10 @@ fn vector_from() {
 fn perfomance_vector_system() {
     fn check_size<T: Number>() {
         let point = [1.0.as_::<T>(); 3];
-        let triangle = Triangle::from([point; 3]);
-        let angle = Angle::from([point; 3]);
-        let line = Line::from([point; 2]);
-        let vector = Vector::from(point);
+        let triangle = Triangle::of([point; 3]);
+        let angle = Angle::of([point; 3]);
+        let line = Line::of([point; 2]);
+        let vector = Vector::of(point);
         println!("{}", type_name::<T>());
         macro_rules! to_mem {
             ($($el:ident),+) => {
@@ -67,13 +68,13 @@ fn perfomance_vector_system() {
     }
     to_pref!(
         "create items" => {
-            let vector = Vector::from([1; 3]);
-            let t = Triangle::from([vector; 3]);
-            let t = Angle::from([vector; 3]);
-            let t = Line::from([vector; 2]);
+            let vector = Vector::of([1; 3]);
+            let t = Triangle::of([vector; 3]);
+            let t = Angle::of([vector; 3]);
+            let t = Line::of([vector; 2]);
         },
         "create circle from traingle" => {
-            Triangle::from([[2.0, 3.0], [4.0, 8.0], [1.0, 1.0]]).get_circle();
+            Triangle::of([[2.0, 3.0], [4.0, 8.0], [1.0, 1.0]]).get_circle();
         },
         "trinagulate" => {
             PointDistribution::set_random_points(2000, [1.0; 2]).triangulate();

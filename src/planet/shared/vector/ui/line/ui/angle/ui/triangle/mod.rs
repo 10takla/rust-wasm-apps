@@ -9,6 +9,7 @@ use crate::planet::shared::{
     point::DefaultMeasureValue,
     vector::{ui::circle::Circle, Number, Vector},
 };
+use crate::traits::of_to::Of;
 
 #[derive(Debug, Clone)]
 pub struct Triangle<T = DefaultMeasureValue, const N: usize = 2> {
@@ -20,12 +21,12 @@ pub struct Triangle<T = DefaultMeasureValue, const N: usize = 2> {
 
 impl<T: Number> Triangle<T> {
     pub fn get_circle(&self) -> Circle<T, 2> {
-        let (a, b, c): (Vector, Vector, Vector) = (
+        let [a, b, c]: [Vector; 3] = [
             (&self.abc.ba.b).as_(),
             (&self.abc.ba.a).as_(),
             (&self.abc.bc.b).as_(),
-        );
-        let (c_ab, c_bc) = ((a + b) / 2.0, (b + c) / 2.0);
+        ];
+        let [c_ab, c_bc] = [(a + b) / 2.0, (b + c) / 2.0];
         /*
         {
             (b.x-a.x)(x-c_ab.x) + (b.y-a.y)(y-c_ab.y) = 0
@@ -81,7 +82,7 @@ impl<T: Number> Triangle<T> {
         let x = (e_ab * v_bc[1] - v_ab[1] * e_bc) / (v_ab[0] * v_bc[1] - v_ab[1] * v_bc[0]);
         let mut y = (e_bc - v_bc[0] * x) / v_bc[1];
         if f64::is_nan(y) {
-            y = dbg!(Triangle::from([b, a, c]).get_circle().center[1]);
+            y = dbg!(Triangle::of([b, a, c]).get_circle().center[1]);
         }
 
         Circle {

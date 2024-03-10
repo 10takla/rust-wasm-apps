@@ -6,6 +6,7 @@ use super::shared::point::DefaultMeasureValue;
 use super::shared::vector::{Number, Vector, Vectors};
 use crate::planet::shared::point::Point;
 use crate::traits::as_::As;
+use crate::traits::of_to::To;
 use crate::{derive_deref, planet::shared::point::Points};
 use rand::distributions::uniform::SampleUniform;
 use rand::Rng;
@@ -22,7 +23,7 @@ derive_deref!(PointDistribution<T, N>, 0, Vectors<T, N>, <T, const N: usize>);
 //     #[wasm_bindgen(constructor)]
 //     pub fn from_points(points: JsValue) -> Self {
 //         let points: Points = from_value(points).unwrap();
-//         points.into()
+//         points.to()
 //     }
 
 //     pub fn set_random_points(point_count: usize, sizes: JsValue) -> Self {
@@ -53,13 +54,13 @@ impl<T: Number + SampleUniform, const N: usize> PointDistribution<T, N> {
                 measures
             })
             .collect();
-        points.into()
+        points.to()
     }
 }
 
 impl<T: Number, const N: usize> PointDistribution<T, N> {
-    pub fn get_box_boundary(&self) -> (Vector<T, N>, Vector<T, N>) {
-        (self.get_min_vector(), self.get_max_vector())
+    pub fn get_box_boundary(&self) -> [Vector<T, N>; 2] {
+        [self.get_min_vector(), self.get_max_vector()]
     }
 
     pub fn get_min_vector(&self) -> Vector<T, N> {
@@ -73,7 +74,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
             .collect::<Vec<T>>()
             .try_into()
             .unwrap();
-        Vector::from(point)
+        point.to()
     }
 
     pub fn get_max_vector(&self) -> Vector<T, N> {
@@ -87,7 +88,7 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
             .collect::<Vec<T>>()
             .try_into()
             .unwrap();
-        Vector::from(point)
+        point.to()
     }
 
     pub fn get_max_point(&self) -> usize {

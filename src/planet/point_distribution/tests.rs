@@ -1,42 +1,43 @@
 use super::PointDistribution;
 
+
 mod max {
-    use crate::planet::point_distribution::Points;
+    use crate::{planet::point_distribution::Points, traits::of_to::Of};
     use super::*;
 
     #[test]
     fn get_max_point() {
         assert_eq!(
-            PointDistribution::from(vec![[3.0, 1.9], [8.0, 0.4], [4.0, 4.5], [4.0, 0.0]])
+            PointDistribution::of(vec![[3.0, 1.9], [8.0, 0.4], [4.0, 4.5], [4.0, 0.0]])
                 .get_max_point(),
             1
         );
         assert_eq!(
-            PointDistribution::from(vec![[0.0, 0.0], [0.0, 0.0]]).get_max_point(),
+            PointDistribution::of(vec![[0.0, 0.0], [0.0, 0.0]]).get_max_point(),
             0
         );
         assert_eq!(
-            PointDistribution::from(vec![[1.0, 0.0], [0.0, 0.0]]).get_max_point(),
+            PointDistribution::of(vec![[1.0, 0.0], [0.0, 0.0]]).get_max_point(),
             0
         );
         assert_eq!(
-            PointDistribution::from(vec![[0.0, 0.1], [0.0, 0.0]]).get_max_point(),
+            PointDistribution::of(vec![[0.0, 0.1], [0.0, 0.0]]).get_max_point(),
             0
         );
         assert_eq!(
-            PointDistribution::from(vec![[0.0, 0.1], [0.0, 0.2]]).get_max_point(),
+            PointDistribution::of(vec![[0.0, 0.1], [0.0, 0.2]]).get_max_point(),
             1
         );
         assert_eq!(
-            PointDistribution::from(vec![[1.0, 0.1], [1.0, 0.0]]).get_max_point(),
+            PointDistribution::of(vec![[1.0, 0.1], [1.0, 0.0]]).get_max_point(),
             0
         );
         assert_eq!(
-            PointDistribution::from(vec![[1.0, 0.1], [1.0, 0.7]]).get_max_point(),
+            PointDistribution::of(vec![[1.0, 0.1], [1.0, 0.7]]).get_max_point(),
             1
         );
         assert_eq!(
-            PointDistribution::from(vec![[0.0, 2.0], [1.0, 0.0]]).get_max_point(),
+            PointDistribution::of(vec![[0.0, 2.0], [1.0, 0.0]]).get_max_point(),
             1
         );
     }
@@ -44,7 +45,7 @@ mod max {
     #[test]
     fn sort_points_by_max() {
         let check = |points: Points, v2| {
-            let sorted_points: Points = PointDistribution::from(points)
+            let sorted_points: Points = PointDistribution::of(points)
                 .sort_points_by_max()
                 .iter()
                 .map(|&(_, p)| *p)
@@ -63,19 +64,19 @@ mod max {
 }
 
 mod min {
-    use crate::planet::point_distribution::Points;
+    use crate::{planet::point_distribution::Points, traits::of_to::Of};
 
     use super::*;
 
     #[test]
     fn get_min_point() {
-        let points = PointDistribution::from(vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]]);
+        let points = PointDistribution::of(vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]]);
         assert_eq!(points.get_min_point(), 1);
     }
 
     #[test]
     fn sort_points_by_min() {
-        let points = PointDistribution::from(vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]]);
+        let points = PointDistribution::of(vec![[3.0, 0.0], [0.0, 0.0], [4.0, 0.0]]);
         let sorted_points: Points = points
             .sort_points_by_min()
             .iter()

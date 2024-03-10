@@ -10,9 +10,11 @@ use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::Triangle;
 use crate::planet::shared::vector::ui::line::ui::angle::Angle;
 use crate::planet::shared::vector::Number;
 use crate::planet::{point_distribution::PointDistribution, shared::vector::Vector};
+use crate::traits::of_to::To;
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::wasm_bindgen_test;
+use crate::traits::of_to::Of;
 
 type Triangles = Vec<[usize; 3]>;
 
@@ -44,7 +46,7 @@ impl PointDistribution {
                         passed_tries.push([a_i, b_i, c_i]);
                     }
 
-                    let triangle = Triangle::from([a, b, c]);
+                    let triangle = Triangle::of([a, b, c]);
                     let circle = triangle.get_circle();
                     let radius = circle.radius();
 
@@ -81,14 +83,11 @@ impl PointDistribution {
 
 impl PointDistribution {
     pub fn triangulate(self) {
-        let non_ind_vecs = |vecs: &Vec<(usize, Vector)>| -> Vec<Rc<Vector>> {
-            vecs.into_iter().map(|(_, vec)| Rc::new(*vec)).collect()
-        };
         let points = self.sort_points_by_min();
-        let start_triangle = Triangle::from(non_ind_vecs(&points[0..=2].to_vec()));
+        let start_triangle = Triangle::of(points[0..=2].into_iter().map(|&(_, vec)| Rc::new(vec)).collect::<Vec<Rc<Vector>>>());
         let next_vec = points[3].1;
 
-        let tri_points: [Vector; 3] = start_triangle.into();
+        let tri_points: [Vector; 3] = start_triangle.to();
         let nearest_vec = tri_points
             .into_iter()
             .min_by(|&a, &b| {
@@ -104,8 +103,8 @@ impl PointDistribution {
             .into_iter()
             .filter(|&v| v != nearest_vec)
             .for_each(|oth_v| {
-                let angle = Angle::from([next_vec, nearest_vec, oth_v]);
-                (Vector::from(angle.ba.reverse()) * Vector::from(angle.ba.reverse()));
+                let angle = Angle::of([next_vec, nearest_vec, oth_v]);
+                (Vector::of(angle.ba.reverse()) * Vector::of(angle.ba.reverse()));
                 // let angle_value = dbg!(angle.get_angle());
             })
 
@@ -115,7 +114,7 @@ impl PointDistribution {
 
 #[test]
 fn delone() {
-    let pd = PointDistribution::from(vec![[0, 0], [0, 5], [-2, 3], [6, 3]]).as_::<f64>();
+    let pd = PointDistribution::of(vec![[0, 0], [0, 5], [-2, 3], [6, 3]]).as_::<f64>();
 
     // let tries = pd.traiangulate();
 }

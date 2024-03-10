@@ -22,7 +22,7 @@ impl PointDistribution {
 
 #[test]
 fn normalize_points() {
-    let r: PointDistribution = vec![[1.0, 1.0]].into();
+    let r: PointDistribution = vec![[1.0, 1.0]].to();
     let r = r.normalize_points();
 }
 

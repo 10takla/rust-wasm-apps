@@ -5,12 +5,12 @@ use crate::planet::shared::{
     point::{DefaultMeasureValue, Point},
     vector::{ui::line::Line, Number},
 };
-use std::fmt::Debug;
+use std::{fmt::Debug, rc::Rc};
 
 #[derive(Debug, Clone)]
 pub struct Rectangle<T = DefaultMeasureValue, const N: usize = 2> {
-    a: Triangle<T, N>,
-    b: Triangle<T, N>,
+    a: Rc<Triangle<T, N>>,
+    b: Rc<Triangle<T, N>>,
 }
 use std::hash::Hash;
 
@@ -22,7 +22,7 @@ impl<T: PartialEq + Eq + Ord + Number + Hash, const N: usize> Rectangle<T, N> {
     }
 
     fn get_common_line(&self) -> Line<T, N> {
-        let (a_lines, b_lines): ([Line<T, N>; 3], [Line<T, N>; 3]) = (self.a.clone().into(), self.b.clone().into());
+        let (a_lines, b_lines): ([Line<T, N>; 3], [Line<T, N>; 3]) = ((*self.a).clone().into(), (*self.b).clone().into());
         let line = a_lines
             .into_iter()
             .find(|line| b_lines.contains(line))

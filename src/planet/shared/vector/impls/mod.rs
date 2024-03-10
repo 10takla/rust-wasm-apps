@@ -1,4 +1,5 @@
 mod ordering;
+mod from;
 
 use super::{Number, Vector};
 use crate::planet::shared::point::Point;
@@ -26,31 +27,6 @@ impl<T: Number, const N: usize> Vector<T, N> {
             .try_into()
             .unwrap();
         Vector::from(point)
-    }
-}
-
-//Froms
-impl<'a, T, const N: usize> From<&'a Vector<T, N>> for &'a Point<T, N> {
-    fn from(value: &'a Vector<T, N>) -> Self {
-        &value.0
-    }
-}
-
-impl<T, const N: usize> From<Vector<T, N>> for Point<T, N> {
-    fn from(value: Vector<T, N>) -> Self {
-        value.0
-    }
-}
-
-impl<T: Copy, const N: usize> From<&Vector<T, N>> for Point<T, N> {
-    fn from(value: &Vector<T, N>) -> Self {
-        value.0
-    }
-}
-
-impl<T: Number, const N: usize> From<Point<T, N>> for Vector<T, N> {
-    fn from(point: Point<T, N>) -> Self {
-        Self(point)
     }
 }
 

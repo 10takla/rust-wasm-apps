@@ -1,8 +1,10 @@
+use std::rc::Rc;
+
 use crate::planet::shared::vector::ui::line::ui::angle::Angle;
 use super::Triangle;
 
 impl<T, const N: usize> IntoIterator for Triangle<T, N> {
-    type Item = Angle<T, N>;
+    type Item = Rc<Angle<T, N>>;
     type IntoIter = std::array::IntoIter<Self::Item, 3>;
 
     fn into_iter(self) -> Self::IntoIter {

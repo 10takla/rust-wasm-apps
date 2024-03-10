@@ -4,7 +4,6 @@ mod tests;
 pub mod ui;
 
 use std::rc::Rc;
-
 use super::super::Angle;
 use crate::planet::shared::{
     point::DefaultMeasureValue,
@@ -14,9 +13,9 @@ use crate::planet::shared::{
 #[derive(Debug, Clone)]
 pub struct Triangle<T = DefaultMeasureValue, const N: usize = 2> {
     // в center угла Central координата, по бокам соседние по часовой стрелке
-    pub cab: Angle<T, N>,
-    pub abc: Angle<T, N>,
-    pub bca: Angle<T, N>,
+    pub cab: Rc<Angle<T, N>>,
+    pub abc: Rc<Angle<T, N>>,
+    pub bca: Rc<Angle<T, N>>,
 }
 
 impl<T: Number> Triangle<T> {

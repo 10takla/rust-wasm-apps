@@ -3,6 +3,8 @@ mod tests;
 mod impls;
 pub mod ui;
 
+use std::rc::Rc;
+
 use crate::planet::shared::{point::DefaultMeasureValue, vector::Number};
 use super::super::{Line, Vector};
 
@@ -10,8 +12,8 @@ use super::super::{Line, Vector};
 #[derive(Debug, Clone)]
 pub struct Angle<T = DefaultMeasureValue, const N: usize = 2> {
     // линии расположны от центральной вершины к соседним
-    pub ba: Line<T, N>,
-    pub bc: Line<T, N>,
+    pub ba: Rc<Line<T, N>>,
+    pub bc: Rc<Line<T, N>>,
 }
 
 impl<T: Number, const N: usize> Angle<T, N> {

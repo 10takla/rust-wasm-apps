@@ -72,6 +72,12 @@ impl<T, const N: usize> Of<Line<T, N>> for [Rc<Vector<T, N>>; 2] {
     }
 }
 
+impl<T, const N: usize> Of<Rc<Line<T, N>>> for [Rc<Vector<T, N>>; 2] {
+    fn of(line: Rc<Line<T, N>>) -> Self {
+        [line.a.clone(), line.b.clone()]
+    }
+}
+
 impl<T: Number, const N: usize> Of<Line<T, N>> for Vector<T, N> {
     fn of(line: Line<T, N>) -> Self {
         *line.b - *line.a

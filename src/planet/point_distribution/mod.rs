@@ -1,7 +1,7 @@
 mod impls;
 #[cfg(test)]
 mod tests;
-mod ui;
+pub mod ui;
 use super::shared::point::DefaultMeasureValue;
 use super::shared::vector::{Number, Vector, Vectors};
 use crate::planet::shared::point::Point;
@@ -17,48 +17,29 @@ use std::cmp::Ordering;
 pub struct PointDistribution<T = DefaultMeasureValue, const N: usize = 2>(Vectors<T, N>);
 derive_deref!(PointDistribution<T, N>, 0, Vectors<T, N>, <T, const N: usize>);
 
-// getters setters
-// #[wasm_bindgen]
-// impl PointDistribution {
-//     #[wasm_bindgen(constructor)]
-//     pub fn from_points(points: JsValue) -> Self {
-//         let points: Points = from_value(points).unwrap();
-//         points.to()
-//     }
-
-//     pub fn set_random_points(point_count: usize, sizes: JsValue) -> Self {
-//         let sizes: Point = from_value(sizes).unwrap();
-//         PointDistribution::set_random_points(point_count, sizes)
-//     }
-
-//     #[wasm_bindgen(getter)]
-//     pub fn points(&self) -> JsValue {
-//         to_value(&self).unwrap()
-//     }
-// }
-
-impl<T: Number + SampleUniform, const N: usize> PointDistribution<T, N> {
-    pub fn set_random_points(point_count: usize, sizes: Point<T, N>) -> Self {
-        let points: Points<T, N> = (0..point_count)
+impl<T: Number, const N: usize> PointDistribution<T, N> {
+    pub fn set_random_points(point_count: usize, sizes: Point<T, N>) -> Self
+    where
+        T: SampleUniform,
+    {
+        (0..point_count)
             .into_iter()
             .map(|_| {
                 let start = 0_i32.as_();
                 let mut measures = [start; N];
                 for i in 0..N {
                     measures[i] = if sizes[i] != start {
-                     rand::thread_rng().gen_range(start..sizes[i])
+                        rand::thread_rng().gen_range(start..sizes[i])
                     } else {
                         start
                     }
                 }
                 measures
             })
-            .collect();
-        points.to()
+            .collect::<Points<T, N>>()
+            .to()
     }
-}
 
-impl<T: Number, const N: usize> PointDistribution<T, N> {
     pub fn get_box_boundary(&self) -> [Vector<T, N>; 2] {
         [self.get_min_vector(), self.get_max_vector()]
     }

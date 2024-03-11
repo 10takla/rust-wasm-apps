@@ -40,7 +40,7 @@ fn get_angle() {
 
 #[test]
 #[ignore]
-fn prefomance_by_points() {
+fn prefomance_set_random_points() {
     let start = Instant::now();
     let pd = PointDistribution::set_random_points(100000, [5.0, 5.0]);
 

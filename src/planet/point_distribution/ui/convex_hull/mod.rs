@@ -4,8 +4,14 @@ mod tests;
 use crate::traits::of_to::Of;
 use crate::planet::{point_distribution::PointDistribution, shared::vector::{ui::line::ui::angle::Angle, Number}};
 
-impl<T: Number, const N: usize> PointDistribution<T, N> {
-    pub fn convex_hull(&self) -> Vec<usize> {
+pub trait ConvexHull<T> {
+    fn convex_hull(&self) -> Vec<usize>;
+    fn get_next_point(&self, hull_edges: &Vec<usize>) -> usize;
+    fn get_angle(&self, hull_edges: &Vec<usize>, p_i: usize) -> T;
+}
+
+impl<T: Number, const N: usize> ConvexHull<T> for PointDistribution<T, N> {
+    fn convex_hull(&self) -> Vec<usize> {
         let mut hull_edges = vec![];
         loop {
             if self.len() == 0 || (hull_edges.len() > 1 && hull_edges[hull_edges.len() - 1] == hull_edges[0]) {

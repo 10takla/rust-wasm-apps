@@ -54,7 +54,7 @@ macro_rules! fast {
                     Vector(
                         self
                             .into_iter()
-                            .map(|a| a - other)
+                            .map(|a| a $op other)
                             .collect::<Vec<T>>()
                             .try_into()
                             .unwrap(),

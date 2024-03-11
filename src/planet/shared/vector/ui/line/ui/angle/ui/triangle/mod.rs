@@ -5,10 +5,10 @@ pub mod ui;
 
 use std::rc::Rc;
 use super::super::Angle;
-use crate::planet::shared::{
+use crate::{planet::shared::{
     point::DefaultMeasureValue,
     vector::{ui::circle::Circle, Number, Vector},
-};
+}, traits::of_to::To};
 use crate::traits::of_to::Of;
 
 #[derive(Debug, Clone)]
@@ -26,7 +26,7 @@ impl<T: Number> Triangle<T> {
             (&self.abc.ba.a).as_(),
             (&self.abc.bc.b).as_(),
         ];
-        let [c_ab, c_bc] = [(a + b) / 2.0, (b + c) / 2.0];
+        let [c_ab, c_bc]: [Vector; 2] = [(a + b) / 2.0, (b + c) / 2.0];
         /*
         {
             (b.x-a.x)(x-c_ab.x) + (b.y-a.y)(y-c_ab.y) = 0
@@ -87,7 +87,7 @@ impl<T: Number> Triangle<T> {
 
         Circle {
             point: Rc::new(self.abc.ba.a.as_()),
-            center: Rc::new(Vector([x, y]).as_()),
+            center: Rc::new([x, y].to::<Vector>().as_()),
         }
     }
 }

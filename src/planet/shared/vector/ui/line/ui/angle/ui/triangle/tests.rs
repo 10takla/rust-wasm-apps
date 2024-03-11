@@ -6,9 +6,10 @@ use crate::traits::of_to::Of;
 
 #[test]
 fn get_circle() {
-    let check = |v1: [Point; 3], v| {    
-        assert_eq!(*Triangle::of(v1).get_circle().center, Vector(v));
+    let check = |tri_points: [Point; 3], point| {    
+        assert_eq!(**Triangle::of(tri_points).get_circle().center, point);
     };
+    
     check([[0.0, 0.0], [3.0, 3.0], [6.0, 0.0]], [3.0, 0.0]);
     check([[1.5, 1.5], [2.5, 2.5], [2.5, 0.5]], [2.5, 1.5]);
     check([[2.0, 1.0], [6.0, 3.0], [9.0, 2.0]], [6.0, -2.0]);

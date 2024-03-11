@@ -69,34 +69,58 @@ impl<T: Clone, const N: usize> Of<Angle<T, N>> for [Line<T, N>; 2] {
     }
 }
 
+impl<T: Copy, const N: usize> Of<Rc<Angle<T, N>>> for [Line<T, N>; 2] {
+    fn of(angle: Rc<Angle<T, N>>) -> Self {
+        [(*angle.ba).clone(), (*angle.bc).clone()]
+    }
+}
+
 impl<T, const N: usize> Of<Angle<T, N>> for [Rc<Line<T, N>>; 2] {
     fn of(angle: Angle<T, N>) -> Self {
         [angle.ba, angle.bc]
     }
 }
 
+impl<T: Copy + Clone, const N: usize> Of<Rc<Angle<T, N>>> for [Rc<Line<T, N>>; 2] {
+    fn of(angle: Rc<Angle<T, N>>) -> Self {
+        [angle.ba.clone(), angle.bc.clone()]
+    }
+}
+
 // for Vector
 impl<T: Copy, const N: usize> Of<Angle<T, N>> for [Vector<T, N>; 3] {
     fn of(angle: Angle<T, N>) -> Self {
-        [*angle.ba.b, *angle.ba.a, *angle.ba.b]
+        [*angle.ba.b, *angle.ba.a, *angle.bc.b]
     }
 }
 
 impl<T: Copy, const N: usize> Of<Angle<T, N>> for [Rc<Vector<T, N>>; 3] {
     fn of(angle: Angle<T, N>) -> Self {
-        [angle.ba.b.clone(), angle.ba.a.clone(), angle.ba.b.clone()]
+        [angle.ba.b.clone(), angle.ba.a.clone(), angle.bc.b.clone()]
+    }
+}
+
+impl<T: Copy, const N: usize> Of<Rc<Angle<T, N>>> for [Vector<T, N>; 3] {
+    fn of(angle: Rc<Angle<T, N>>) -> Self {
+        [*angle.ba.b, *angle.ba.a, *angle.bc.b]
+    }
+}
+
+impl<T: Copy, const N: usize> Of<Rc<Angle<T, N>>> for [Rc<Vector<T, N>>; 3] {
+    fn of(angle: Rc<Angle<T, N>>) -> Self {
+        [angle.ba.b.clone(), angle.ba.a.clone(), angle.bc.b.clone()]
     }
 }
 
 // for Point
 impl<T: Copy, const N: usize> Of<Angle<T, N>> for [Point<T, N>; 3] {
     fn of(angle: Angle<T, N>) -> Self {
-        [(*angle.ba.b).to(), (*angle.ba.a).to(), (*angle.ba.b).to()]
+        [(*angle.ba.b).to(), (*angle.ba.a).to(), (*angle.bc.b).to()]
     }
 }
 
 impl<T: Copy, const N: usize> Of<&Angle<T, N>> for [Point<T, N>; 3] {
     fn of(angle: &Angle<T, N>) -> Self {
-        [(*angle.ba.b).to(), (*angle.ba.a).to(), (*angle.ba.b).to()]
+        [(*angle.ba.b).to(), (*angle.ba.a).to(), (*angle.bc.b).to()]
     }
 }

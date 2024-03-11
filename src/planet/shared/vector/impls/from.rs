@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::planet::shared::{point::Point, vector::{Number, Vector}};
 use crate::traits::of_to::Of;
 
@@ -14,6 +16,11 @@ impl<T: Number, const N: usize> Of<&Point<T, N>> for Vector<T, N> {
     }
 }
 
+impl<T: Number, const N: usize> Of<Point<T, N>> for Rc<Vector<T, N>> {
+    fn of(point: Point<T, N>) -> Self {
+        Rc::new(Vector(point))
+    }
+}
 // for point
 impl<T, const N: usize> Of<Vector<T, N>> for Point<T, N> {
     fn of(value: Vector<T, N>) -> Self {

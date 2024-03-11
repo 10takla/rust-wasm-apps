@@ -1,4 +1,5 @@
-use std::{any::type_name, mem, rc::Rc, time::Instant};
+use std::{any::type_name, mem, time::Instant};
+use crate::planet::point_distribution::ui::triangulate::Triangulate;
 use crate::traits::of_to::Of;
 
 use crate::{
@@ -58,7 +59,7 @@ fn perfomance_vector_system() {
     to_size!(f64, i32, i128);
 
     macro_rules! to_pref {
-        ($($discr:expr => $test:block),+) => {
+        ($($discr:expr => $test:block),+ $(,)?) => {
             $(
                 let start = Instant::now();
                 $test
@@ -76,8 +77,8 @@ fn perfomance_vector_system() {
         "create circle from traingle" => {
             Triangle::of([[2.0, 3.0], [4.0, 8.0], [1.0, 1.0]]).get_circle();
         },
-        "trinagulate" => {
-            PointDistribution::set_random_points(2000, [1.0; 2]).triangulate();
-        }
+        // "trinagulate" => {
+        //     PointDistribution::set_random_points(2000, [1.0; 2]).triangulate();
+        // }
     );
 }

@@ -1,243 +1,97 @@
 mod display;
 mod iterator;
+mod of_to;
+mod ordering;
+mod alien;
+mod search;
 
 use super::Triangle;
-use crate::traits::of_to::Of;
+use crate::planet::shared::traits::{Has, Svg};
+use crate::planet::shared::vector::Vector;
 use crate::{
     planet::shared::{
         point::Point,
         vector::{
             ui::line::{ui::angle::Angle, Line},
-            Number, Vector,
+            Number,
         },
     },
     traits::of_to::To,
 };
-use std::{fmt::Debug, rc::Rc};
+use std::fmt::Debug;
+use std::rc::Rc;
+use svg::node::element::path::Parameters;
+use svg::node::element::Polygon;
+use svg::node::Value;
+use svg::Document;
 
-/* -------FROM------- */
-
-// from Angle
-impl<T: Copy, const N: usize> Of<[Angle<T, N>; 3]> for Triangle<T, N> {
-    fn of(angles: [Angle<T, N>; 3]) -> Self {
-        Self {
-            abc: Rc::new(angles[0].clone()),
-            bca: Rc::new(angles[1].clone()),
-            cab: Rc::new(angles[2].clone()),
-        }
+//Debug
+impl<T: Number, const N: usize> Debug for Triangle<T, N> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let vecs = self.to::<[Vector<T, N>; 3]>();
+        f.debug_struct("Rectangle")
+            .field("a", &vecs[0])
+            .field("b", &vecs[1])
+            .field("c", &vecs[2])
+            .finish()
     }
 }
 
-// from Line
-impl<T: Number, const N: usize> Of<[Line<T, N>; 3]> for Triangle<T, N> {
-    fn of(lines: [Line<T, N>; 3]) -> Self {
-        let [ab, bc, ac] = [0, 1, 2].map(|ind| Rc::new(lines[ind].clone()));
-        Self {
-            cab: Rc::new([ab.clone(), ac.clone()].to()),
-            abc: Rc::new([ab.clone(), bc.clone()].to()),
-            bca: Rc::new([ac.clone(), bc.clone()].to()),
-        }
+// Has
+impl<T: Number, const N: usize> Has<Rc<Angle<T, N>>> for Triangle<T, N> {
+    fn has(&self, angle: &Rc<Angle<T, N>>) -> bool {
+        self.clone().into_iter().any(|angle1| angle1 == *angle)
     }
 }
 
-// from Vector
-impl<T: Number, const N: usize> Of<Vec<Rc<Vector<T, N>>>> for Triangle<T, N> {
-    fn of(vecs: Vec<Rc<Vector<T, N>>>) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([vecs[inds[0]].clone(), vecs[inds[1]].clone()])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[Vector<T, N>; 3]> for Triangle<T, N> {
-    fn of(vecs: [Vector<T, N>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-        .map(|inds| Rc::new(Line::of([vecs[inds[0]], vecs[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[&Vector<T, N>; 3]> for Triangle<T, N> {
-    fn of(vecs: [&Vector<T, N>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([*vecs[inds[0]], *vecs[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[Rc<Vector<T, N>>; 3]> for Triangle<T, N> {
-    fn of(vecs: [Rc<Vector<T, N>>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([vecs[inds[0]].clone(), vecs[inds[1]].clone()])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-// from Point
-impl<T: Number, const N: usize> Of<Vec<Point<T, N>>> for Triangle<T, N> {
-    fn of(points: Vec<Point<T, N>>) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([points[inds[0]], points[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[Point<T, N>; 3]> for Triangle<T, N> {
-    fn of(points: [Point<T, N>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([points[inds[0]], points[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-/* -------FOR------- */
-
-// for Line
-impl<T: Eq + Debug + Copy, const N: usize> Of<Triangle<T, N>> for [Line<T, N>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        triangle
+impl<T: Number, const N: usize> Has<Rc<Line<T, N>>> for Triangle<T, N> {
+    fn has(&self, n_line: &Rc<Line<T, N>>) -> bool {
+        self.clone()
+            .to::<[Line<T, N>; 3]>()
             .into_iter()
-            .map(|angle| (*angle).clone().to::<[Rc<Line<T, N>>; 2]>())
-            .flatten()
-            .into_iter()
-            .fold(vec![], |mut acc, line| {
-                if !acc.clone().iter().any(|line1| Rc::ptr_eq(line1, &line)) {
-                    acc.push(line)
-                }
-                acc
-            })
-            .into_iter()
-            .map(|line| (*line).clone())
-            .collect::<Vec<Line<T, N>>>()
-            .try_into()
-            .unwrap()
+            .any(|line| line == *n_line.clone())
     }
 }
 
-impl<T: Eq + Debug + Copy, const N: usize> Of<Rc<Triangle<T, N>>> for [Line<T, N>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        (*triangle)
+// Svg
+impl<T: Number> Svg for Triangle<T> {
+    fn to_svg(&self, document: &mut Document) {
+        let points = self
+            .to::<[Point<T>; 3]>()
+            .map(|point| point.map(|m| m.to_string()).join(","))
+            .join(" ");
+        *document = document.clone().add(
+            Polygon::new()
+                .set("points", points)
+                .set("fill", "rgba(255, 0, 0, 0.5)"),
+        )
+    }
+}
+
+impl<T: Number + Into<Value>> Svg for Rc<Triangle<T>> {
+    fn to_svg(&self, document: &mut Document) {
+        let points = (*self.as_ref())
             .clone()
-            .into_iter()
-            .map(|angle| angle.to::<[Rc<Line<T, N>>; 2]>())
-            .flatten()
-            .into_iter()
-            .fold(vec![], |mut acc, line| {
-                if !acc.clone().iter().any(|line1| Rc::ptr_eq(line1, &line)) {
-                    acc.push(line)
-                }
-                acc
+            .to::<[Point<T>; 3]>()
+            .map(|point| {
+                point.map(|value| value.to_string()).join(",")
             })
-            .into_iter()
-            .map(|line| (*line).clone())
-            .collect::<Vec<Line<T, N>>>()
-            .try_into()
-            .unwrap()
+            .join(" ");
+
+        *document = document.clone().add(
+            Polygon::new()
+                .set("points", points)
+                .set("fill", "rgba(255, 0, 0, 0.5)"),
+        )
     }
 }
 
-impl<T: Eq + Debug + Copy, const N: usize> Of<Triangle<T, N>> for [Rc<Line<T, N>>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        triangle
-            .into_iter()
-            .map(|angle| angle.to::<[Rc<Line<T, N>>; 2]>())
-            .flatten()
-            .into_iter()
-            .fold(
-                vec![],
-                |mut acc: Vec<Rc<Line<T, N>>>, line: Rc<Line<T, N>>| {
-                    println!("{line:?} {:?}", Rc::as_ptr(&line));
-                    if !acc.clone().iter().any(|line1| Rc::ptr_eq(line1, &line)) {
-                        acc.push(line)
-                    }
-                    acc
-                },
-            )
-            .try_into()
-            .unwrap()
-    }
-}
+impl<T: Number + Into<Value> + Into<Parameters>> Svg for Vec<Rc<Triangle<T>>> {
+    fn to_svg(&self, document: &mut Document) {
+        self.into_iter().for_each(|triangle| {
+            triangle.to_svg(document);
+        });
 
-impl<T: Eq + Debug + Copy, const N: usize> Of<Rc<Triangle<T, N>>> for [Rc<Line<T, N>>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        (*triangle)
-            .clone()
-            .into_iter()
-            .map(|angle| angle.to::<[Rc<Line<T, N>>; 2]>())
-            .flatten()
-            .into_iter()
-            .fold(
-                vec![],
-                |mut acc: Vec<Rc<Line<T, N>>>, line: Rc<Line<T, N>>| {
-                    if !acc.clone().iter().any(|line1| Rc::ptr_eq(line1, &line)) {
-                        acc.push(line)
-                    }
-                    acc
-                },
-            )
-            .try_into()
-            .unwrap()
-    }
-}
-
-// for Vector
-impl<T: Copy, const N: usize> Of<Triangle<T, N>> for [Vector<T, N>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        (*triangle.abc).clone().to()
-    }
-}
-
-impl<T: Copy, const N: usize> Of<Triangle<T, N>> for [Rc<Vector<T, N>>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        (*triangle.abc).clone().to()
-    }
-}
-
-impl<T: Copy, const N: usize> Of<Rc<Triangle<T, N>>> for [Vector<T, N>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        triangle.abc.clone().to()
-    }
-}
-
-impl<T: Copy, const N: usize> Of<Rc<Triangle<T, N>>> for [Rc<Vector<T, N>>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        triangle.abc.clone().to()
-    }
-}
-
-// for Point
-impl<T: Copy, const N: usize> Of<Triangle<T, N>> for [Point<T, N>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        (*triangle.abc).clone().to()
-    }
-}
-
-impl<T: Copy, const N: usize> Of<&Triangle<T, N>> for [Point<T, N>; 3] {
-    fn of(triangle: &Triangle<T, N>) -> Self {
-        (*triangle.abc).clone().to()
+        self.to::<Vec<Rc<Line<T>>>>().to_svg(document);
     }
 }

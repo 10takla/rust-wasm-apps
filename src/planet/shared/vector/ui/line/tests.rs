@@ -1,12 +1,13 @@
-use super::Line;
 use crate::traits::of_to::Of;
+
+use super::Line;
 
 #[macro_export]
 macro_rules! convert_test {
     ($name:ident, $l:tt, $([$($c:tt), +]), +) => {
         #[test]
         fn convert() {
-            let line = $name::from([$([$($c), +],) +]);
+            let line = $name::of([$([$($c), +],) +]);
             let line: $name<f64> = (&line).to();
 
             let points: [Point; $l] = line.to();

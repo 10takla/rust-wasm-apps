@@ -1,20 +1,26 @@
-use crate::{planet::{
-    point_distribution::PointDistribution,
-    shared::{
-        point::Point,
-        vector::{
-            ui::line::{ui::angle::Angle, Line}, Number, Vector
+use crate::planet::shared::traits::As;
+
+use crate::traits::of_to::Of;
+use crate::{
+    planet::{
+        point_distribution::PointDistribution,
+        shared::{
+            point::Point,
+            vector::{
+                ui::line::{ui::angle::Angle, Line},
+                Number, Vector,
+            },
         },
     },
-}, traits::as_::As};
-use crate::traits::of_to::Of;
-use std::{f32::consts::PI, fmt::Display, rc::Rc};
+    traits::as_prim::AsPrim,
+};
+use std::{f32::consts::PI, fmt::Display};
 
 impl<T: Number> Display for Line<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let [width, height, padding] = [10, 10, 1];
 
-        let [min, max] = PointDistribution::of(vec![self.a.clone(), self.b.clone()]).get_box_boundary();
+        let [min, max] = PointDistribution::of(vec![&self.a, &self.b]).get_box_boundary();
         let height = if max[1] > height.as_() {
             height
         } else {
@@ -55,12 +61,11 @@ impl<T: Number> Display for Line<T> {
         };
 
         let prefs = {
-            let get_normal = |line: Line<i32>| {
-                let start_vector = *line.a;
+            let get_normal = |line: &Line<i32>| {
                 let vector = Vector::of(line).as_::<f64>();
-                (Angle::<f64>::angle_to_vector(vector.atan() + PI as f64) * 2.0).as_() + start_vector
+                (Angle::<f64>::angle_to_vector(vector.atan() + PI as f64) * 2.0).as_() + *line.a
             };
-            [get_normal(line.clone()), get_normal(line.clone().reverse())]
+            [get_normal(&line), get_normal(&line.reverse())]
         };
 
         let [a, b] = [*line.a, *line.b];
@@ -83,7 +88,7 @@ impl<T: Number> Display for Line<T> {
                     .map(|w_i| {
                         type P = [Vector<i32>; 2];
                         let v = Vector([w_i, h_i]);
-                        // if P::from(line).contains(&v) {
+                        // if P::of(line).contains(&v) {
                         //     return "●";
                         // }
                         if let Some(i) = prefs.into_iter().position(|p| p.0 == [w_i, h_i]) {

@@ -4,8 +4,9 @@ mod tests;
 pub mod ui;
 
 use super::point::{DefaultMeasureValue, Point};
+use super::traits::As;
 use crate::derive_deref;
-use crate::traits::as_::As;
+use crate::traits::as_prim::AsPrim;
 use serde::ser::SerializeSeq;
 use serde::Serialize;
 use std::fmt::Debug;
@@ -30,8 +31,9 @@ pub trait Number:
     + Sum
     + Default
     + Debug
-    + As
+    + AsPrim
     + PartialOrd
+    + PartialEq
 {
 }
 

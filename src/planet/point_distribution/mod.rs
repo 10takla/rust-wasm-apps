@@ -5,14 +5,14 @@ pub mod ui;
 use super::shared::point::DefaultMeasureValue;
 use super::shared::vector::{Number, Vector, Vectors};
 use crate::planet::shared::point::Point;
-use crate::traits::as_::As;
+use crate::traits::as_prim::AsPrim;
 use crate::traits::of_to::To;
 use crate::{derive_deref, planet::shared::point::Points};
 use rand::distributions::uniform::SampleUniform;
 use rand::Rng;
 use std::cmp::Ordering;
+use std::rc::Rc;
 
-// #[wasm_bindgen]
 #[derive(Debug, Clone)]
 pub struct PointDistribution<T = DefaultMeasureValue, const N: usize = 2>(Vectors<T, N>);
 derive_deref!(PointDistribution<T, N>, 0, Vectors<T, N>, <T, const N: usize>);
@@ -72,36 +72,30 @@ impl<T: Number, const N: usize> PointDistribution<T, N> {
         point.to()
     }
 
-    pub fn get_max_point(&self) -> usize {
-        self.sort_points_by_max()[0].0
-    }
-    pub fn get_max_point_by_axis(&self) -> usize {
-        self.sort_points_by_max()[0].0
+    pub fn get_max_point(&mut self) -> Rc<Vector<T, N>> {
+        self.sort_points_by_max()[0].clone()
     }
 
-    pub fn sort_points_by_max(&self) -> Vec<(usize, Vector<T, N>)> {
-        let mut new_points: Vec<(usize, Vector<T, N>)> =
-            self.iter().enumerate().map(|(i, p)| (i, **p)).collect();
-        new_points.sort_by(|&(_, a), &(_, b)| {
-            if *a > *b {
-                return Ordering::Less;
-            }
-            if *a < *b {
-                return Ordering::Greater;
-            }
-            Ordering::Equal
+    pub fn sort_points_by_max(&mut self) -> Self {
+        let mut vecs = self.0.clone();
+        vecs.sort_by(|a, b| match a.partial_cmp(&b) {
+            Some(ordering) => match ordering {
+                Ordering::Greater => Ordering::Less,
+                Ordering::Less => Ordering::Greater,
+                Ordering::Equal => Ordering::Equal,
+            },
+            None => Ordering::Equal,
         });
-        new_points
+        vecs.to()
     }
 
-    pub fn get_min_point(&self) -> usize {
-        self.sort_points_by_min()[0].0
+    pub fn get_min_point(&self) -> Rc<Vector<T, N>> {
+        self.sort_points_by_min()[0].clone()
     }
 
-    pub fn sort_points_by_min(&self) -> Vec<(usize, Vector<T, N>)> {
-        let mut new_points: Vec<(usize, Vector<T, N>)> =
-            self.iter().enumerate().map(|(i, p)| (i, **p)).collect();
-        new_points.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap());
-        new_points
+    pub fn sort_points_by_min(&self) -> Self {
+        let mut vecs = self.0.clone();
+        vecs.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        vecs.to()
     }
 }

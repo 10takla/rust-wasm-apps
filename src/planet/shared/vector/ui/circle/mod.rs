@@ -1,6 +1,6 @@
 mod impls;
 
-use std::{ops::Deref, rc::Rc};
+use std::rc::Rc;
 use crate::planet::shared::{point::DefaultMeasureValue, vector::{Number, Vector}};
 
 #[derive(Debug)]

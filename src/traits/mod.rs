@@ -1,2 +1,2 @@
-pub mod as_;
+pub mod as_prim;
 pub mod of_to;

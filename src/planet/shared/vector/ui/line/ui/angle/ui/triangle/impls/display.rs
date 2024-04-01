@@ -1,11 +1,16 @@
-use crate::planet::{point_distribution::PointDistribution, shared::vector::{
-    ui::line::ui::angle::{ui::triangle::Triangle, Angle},
-    Number, Vector,
-}};
-use core::fmt;
-use std::{fmt::{Display, Formatter}, ops::Deref};
-use crate::traits::as_::As;
+use crate::planet::shared::traits::As;
+use crate::planet::{
+    point_distribution::PointDistribution,
+    shared::vector::{
+        ui::line::ui::angle::{ui::triangle::Triangle, Angle},
+        Number, Vector,
+    },
+};
+use crate::traits::as_prim::AsPrim;
 use crate::traits::of_to::Of;
+
+use core::fmt;
+use std::fmt::{Display, Formatter};
 
 impl<T: Number> Display for Triangle<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

@@ -1,14 +1,18 @@
-mod ordering;
-mod from;
+mod arithmetic;
+mod of_to;
 
+use super::ui::line::Line;
 use super::{Number, Vector};
 use crate::planet::shared::point::Point;
-use std::{
-    iter::Sum,
-    ops::{Add, Div, Mul, Sub},
-};
-use crate::traits::of_to::To;
+use crate::planet::shared::traits::{As, Nearest, Svg};
+use crate::traits::as_prim::AsPrim;
+use crate::traits::of_to::{Of, To};
+use std::rc::Rc;
+use svg::node::element::Circle;
+use svg::node::Value;
+use svg::Document;
 
+// Default
 impl<T, const N: usize> Default for Vector<T, N>
 where
     T: Default + Copy,
@@ -18,8 +22,11 @@ where
     }
 }
 
-impl<T: Number, const N: usize> Vector<T, N> {
-    pub fn as_<I: Number>(self) -> Vector<I, N> {
+// As
+impl<T: Number, const N: usize> As for Vector<T, N> {
+    type Output<I> = Vector<I, N>;
+
+    fn as_<I: Number>(&self) -> Self::Output<I> {
         let point: Point<I, N> = self
             .into_iter()
             .map(|measure| measure.as_::<I>())
@@ -30,49 +37,31 @@ impl<T: Number, const N: usize> Vector<T, N> {
     }
 }
 
-// Arithmetic
-macro_rules! fast {
-    ($trait:ident => $y:tt => $op:tt => $($t:ty),+) => {
-        $(
-            impl<T: Number, const N: usize> $trait for $t {
-                type Output = Vector<T, N>;
-                fn $y(self, other: Self) -> Self::Output {
-                    Vector(
-                        self
-                            .into_iter()
-                            .zip(other.into_iter())
-                            .map(|(a, b)| a $op b)
-                            .collect::<Vec<T>>()
-                            .try_into()
-                            .unwrap(),
-                    )
-                }
-            }
-            impl<T: Number, const N: usize> $trait<T> for $t {
-                type Output = Vector<T, N>;
-                fn $y(self, other: T) -> Self::Output {
-                    Vector(
-                        self
-                            .into_iter()
-                            .map(|a| a $op other)
-                            .collect::<Vec<T>>()
-                            .try_into()
-                            .unwrap(),
-                    )
-                }
-            }
-        )+
-    };
-    ($($trait:ident => $y:tt => $op:tt),+) => {
-        $(
-            fast!($trait => $y => $op => Vector<T, N>, &Vector<T, N>);
-        )+
-    };
+// Svg
+impl<T: Number + Into<Value>> Svg for Rc<Vector<T>> {
+    fn to_svg(&self, document: &mut Document) {
+        // let vector: Vector<T> = **self * 40.as_::<T>();
+        *document = document.clone().add(
+            Circle::new()
+                .set("cx", self[0])
+                .set("cy", self[1])
+                .set("r", 0.3)
+                .set("fill", "black")
+        );
+    }
 }
-fast!(Add => add => +, Sub => sub => -, Mul => mul => *, Div => div => /);
 
-impl<T: Number, const N: usize> Sum for Vector<T, N> {
-    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Vector::<T, N>::default(), |acc, v| acc + v)
+// Nearest
+impl Nearest<Rc<Vector>> for Vec<Rc<Vector>> {
+    fn nearest(&self, vector: &Rc<Vector>) -> Rc<Vector> {
+        self.clone()
+            .into_iter()
+            .min_by(|a, b| {
+                let [a, b] = (Line::of([a, b]) - vector.clone())
+                    .to::<[Rc<Vector>; 2]>()
+                    .map(|vector| vector.radius().abs());
+                a.partial_cmp(&b).unwrap()
+            })
+            .unwrap()
     }
 }

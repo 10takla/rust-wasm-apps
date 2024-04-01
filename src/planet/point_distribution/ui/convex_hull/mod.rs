@@ -1,22 +1,29 @@
 #[cfg(test)]
 mod tests;
 
-use crate::traits::of_to::Of;
-use crate::planet::{point_distribution::PointDistribution, shared::vector::{ui::line::ui::angle::Angle, Number}};
+use std::rc::Rc;
 
-pub trait ConvexHull<T> {
-    fn convex_hull(&self) -> Vec<usize>;
-    fn get_next_point(&self, hull_edges: &Vec<usize>) -> usize;
-    fn get_angle(&self, hull_edges: &Vec<usize>, p_i: usize) -> T;
+use crate::{
+    planet::{
+        point_distribution::PointDistribution,
+        shared::vector::{
+            ui::line::{ui::angle::Angle, Line},
+            Number, Vector,
+        },
+    },
+    traits::of_to::{Of, To},
+};
+
+pub trait ConvexHull<T, const N: usize> {
+    fn convex_hull(&self) -> Vec<Rc<Line<T, N>>>;
+    fn get_next_point(&self, hull_edges: &Vec<Rc<Vector<T, N>>>) -> Rc<Vector<T, N>>;
+    fn get_angle(&self, hull_edges: &Vec<Rc<Vector<T, N>>>, p_i: &Rc<Vector<T, N>>) -> T;
 }
 
-impl<T: Number, const N: usize> ConvexHull<T> for PointDistribution<T, N> {
-    fn convex_hull(&self) -> Vec<usize> {
-        let mut hull_edges = vec![];
+impl<T: Number, const N: usize> ConvexHull<T, N> for PointDistribution<T, N> {
+    fn convex_hull(&self) -> Vec<Rc<Line<T, N>>> {
+        let mut hull_edges: Vec<Rc<Vector<T, N>>> = vec![];
         loop {
-            if self.len() == 0 || (hull_edges.len() > 1 && hull_edges[hull_edges.len() - 1] == hull_edges[0]) {
-                break hull_edges;
-            }
             let finded_p = {
                 if hull_edges.len() == 0 {
                     self.get_min_point()
@@ -24,54 +31,64 @@ impl<T: Number, const N: usize> ConvexHull<T> for PointDistribution<T, N> {
                     self.get_next_point(&hull_edges)
                 }
             };
-            hull_edges.push(finded_p);
+            if self.len() == 0 || (hull_edges.len() > 1 && Rc::ptr_eq(&finded_p, &hull_edges[0])) {
+                break {
+                    let mut lines = hull_edges.clone().to::<Vec<Rc<Line<T, N>>>>();
+                    lines.push(Rc::new(Line::of([
+                        &hull_edges[hull_edges.len() - 1],
+                        &hull_edges[0],
+                    ])));
+                    lines
+                };
+            } else {
+                hull_edges.push(finded_p);
+            }
         }
     }
 
-    fn get_next_point(&self, hull_edges: &Vec<usize>) -> usize {
+    fn get_next_point(&self, hull_edges: &Vec<Rc<Vector<T, N>>>) -> Rc<Vector<T, N>> {
         let hull_edges_len = hull_edges.len();
-        let n_p_i = hull_edges[hull_edges_len - 1];
-        let n_p = self[n_p_i].clone();
+        let n_p_i = hull_edges[hull_edges_len - 1].clone();
 
         let points_width_ids = self.iter();
 
         let next_p = {
             if hull_edges_len >= 2 {
                 points_width_ids
-                    .enumerate()
-                    .filter(|&(i, _)| {
+                    .filter(|&i| {
                         if hull_edges_len >= 3 {
-                            i == hull_edges[0] || !hull_edges.contains(&i)
+                            Rc::ptr_eq(i, &hull_edges[0])
+                                || !hull_edges.iter().any(|e| Rc::ptr_eq(e, i))
                         } else {
                             !hull_edges.contains(&i)
                         }
                     })
-                    .max_by(|&(b_i, _), &(c_i, _)| {
-                        let [b_angle, c_angle] = [self.get_angle(hull_edges, b_i), self.get_angle(hull_edges, c_i)];
+                    .max_by(|&b_i, &c_i| {
+                        let [b_angle, c_angle] = [
+                            self.get_angle(hull_edges, b_i),
+                            self.get_angle(hull_edges, c_i),
+                        ];
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
                     .unwrap()
             } else {
                 points_width_ids
-                    .enumerate()
-                    .filter(|&(i, _)| i != n_p_i)
-                    .min_by(|&(_, b), &(_, c)| {
-                        let [b_angle, c_angle] = [
-                            (**b - *n_p).atan(),
-                            (**c - *n_p).atan(),
-                        ];
+                    .filter(|&i| !Rc::eq(i, &n_p_i))
+                    .min_by(|&b, &c| {
+                        let [b_angle, c_angle] = [(**b - *n_p_i).atan(), (**c - *n_p_i).atan()];
                         b_angle.partial_cmp(&c_angle).unwrap()
                     })
                     .unwrap()
             }
         };
-        next_p.0
+        (*next_p).clone()
     }
-    fn get_angle(&self, hull_edges: &Vec<usize>, p_i: usize) -> T {
+    fn get_angle(&self, hull_edges: &Vec<Rc<Vector<T, N>>>, p_i: &Rc<Vector<T, N>>) -> T {
         Angle::of([
-            self[hull_edges[hull_edges.len() - 2]].clone(),
-            self[hull_edges[hull_edges.len() - 1]].clone(),
-            self[p_i].clone(),
-        ]).get_angle()
+            &hull_edges[hull_edges.len() - 2],
+            &hull_edges[hull_edges.len() - 1],
+            &p_i,
+        ])
+        .get_angle()
     }
 }

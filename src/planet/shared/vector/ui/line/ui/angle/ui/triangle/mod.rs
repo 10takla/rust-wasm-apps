@@ -3,15 +3,19 @@ mod impls;
 mod tests;
 pub mod ui;
 
-use std::rc::Rc;
 use super::super::Angle;
-use crate::{planet::shared::{
-    point::DefaultMeasureValue,
-    vector::{ui::circle::Circle, Number, Vector},
-}, traits::of_to::To};
-use crate::traits::of_to::Of;
 
-#[derive(Debug, Clone)]
+use crate::{
+    planet::shared::{
+        point::DefaultMeasureValue,
+        traits::As,
+        vector::{ui::circle::Circle, Number, Vector},
+    },
+    traits::of_to::{Of, To},
+};
+use std::rc::Rc;
+
+#[derive(Clone)]
 pub struct Triangle<T = DefaultMeasureValue, const N: usize = 2> {
     // в center угла Central координата, по бокам соседние по часовой стрелке
     pub cab: Rc<Angle<T, N>>,
@@ -82,7 +86,7 @@ impl<T: Number> Triangle<T> {
         let x = (e_ab * v_bc[1] - v_ab[1] * e_bc) / (v_ab[0] * v_bc[1] - v_ab[1] * v_bc[0]);
         let mut y = (e_bc - v_bc[0] * x) / v_bc[1];
         if f64::is_nan(y) {
-            y = dbg!(Triangle::of([b, a, c]).get_circle().center[1]);
+            y = Triangle::of([c, b, a]).get_circle().center[1];
         }
 
         Circle {

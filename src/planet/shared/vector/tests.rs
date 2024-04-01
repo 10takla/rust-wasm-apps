@@ -1,13 +1,13 @@
+use crate::{planet::{point_distribution::ui::triangulate::Triangulate, shared::traits::As}, traits::of_to::Of};
+
 use std::{any::type_name, mem, time::Instant};
-use crate::planet::point_distribution::ui::triangulate::Triangulate;
-use crate::traits::of_to::Of;
 
 use crate::{
     planet::{
         point_distribution::PointDistribution,
         shared::vector::ui::line::{ui::angle::Angle, Line},
     },
-    traits::as_::As,
+    traits::as_prim::AsPrim,
 };
 
 use super::{ui::line::ui::angle::ui::triangle::Triangle, Number, Vector};

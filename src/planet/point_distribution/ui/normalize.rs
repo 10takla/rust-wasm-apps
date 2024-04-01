@@ -34,8 +34,8 @@ fn tmp() {
         let count = points.len();
         let start = Instant::now();
         let ave_vec = |points| {
-            <Vec<Vector> as Clone>::clone(&points)
-                .into_iter()
+            points
+                .iter()
                 .sum::<Vector>()
         };
         let mut ave_vecs = Vec::new();
@@ -82,8 +82,8 @@ fn tmp() {
 
         let start = Instant::now();
         let ave_vec = |points| {
-            <Vec<Vector> as Clone>::clone(&points)
-                .into_iter()
+            points
+                .iter()
                 .sum::<Vector>()
         };
         let mut ave_vecs = Vec::new();

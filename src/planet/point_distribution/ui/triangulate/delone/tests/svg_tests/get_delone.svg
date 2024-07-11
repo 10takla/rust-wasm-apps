@@ -1,42 +1,66 @@
-<svg height="1080" style="transform: scaleY(-1); border: 10px black solid;" viewBox="0 0 15 15" width="1080" xmlns="http://www.w3.org/2000/svg">
-<polygon fill="rgba(255, 0, 0, 0.5)" points="2,3 2,1 3,2"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="2,3 3,2 4,4"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="3,2 2,1 5,2"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="4,4 3,2 5,2"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="4,4 5,2 6,4"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="5,2 2,1 7,1"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="6,4 5,2 7,1"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="6,4 7,1 8,4"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="4,4 6,4 7.5,7"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="2,3 4,4 7.5,7"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="6,4 7,1 8,4"/>
-<polygon fill="rgba(255, 0, 0, 0.5)" points="8,4 6,4 7.5,7"/>
-<circle cx="2" cy="1" fill="black" r="0.3"/>
-<circle cx="2" cy="3" fill="black" r="0.3"/>
-<circle cx="3" cy="2" fill="black" r="0.3"/>
-<circle cx="4" cy="4" fill="black" r="0.3"/>
-<circle cx="5" cy="2" fill="black" r="0.3"/>
-<circle cx="6" cy="4" fill="black" r="0.3"/>
-<circle cx="7" cy="1" fill="black" r="0.3"/>
-<circle cx="8" cy="4" fill="black" r="0.3"/>
-<circle cx="7.5" cy="7" fill="black" r="0.3"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="2" y1="1" y2="3"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="3" y1="1" y2="2"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="3" y1="3" y2="2"/>
-<line stroke="black" stroke-width="0.2" x1="3" x2="4" y1="2" y2="4"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="4" y1="3" y2="4"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="5" y1="1" y2="2"/>
-<line stroke="black" stroke-width="0.2" x1="3" x2="5" y1="2" y2="2"/>
-<line stroke="black" stroke-width="0.2" x1="4" x2="5" y1="4" y2="2"/>
-<line stroke="black" stroke-width="0.2" x1="5" x2="6" y1="2" y2="4"/>
-<line stroke="black" stroke-width="0.2" x1="4" x2="6" y1="4" y2="4"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="7" y1="1" y2="1"/>
-<line stroke="black" stroke-width="0.2" x1="5" x2="7" y1="2" y2="1"/>
-<line stroke="black" stroke-width="0.2" x1="6" x2="7" y1="4" y2="1"/>
-<line stroke="black" stroke-width="0.2" x1="7" x2="8" y1="1" y2="4"/>
-<line stroke="black" stroke-width="0.2" x1="6" x2="8" y1="4" y2="4"/>
-<line stroke="black" stroke-width="0.2" x1="6" x2="7.5" y1="4" y2="7"/>
-<line stroke="black" stroke-width="0.2" x1="4" x2="7.5" y1="4" y2="7"/>
-<line stroke="black" stroke-width="0.2" x1="2" x2="7.5" y1="3" y2="7"/>
-<line stroke="black" stroke-width="0.2" x1="8" x2="7.5" y1="4" y2="7"/>
+<svg height="1080" viewBox="0 0 12 12" width="1080" xmlns="http://www.w3.org/2000/svg">
+<circle cx="3.6098796284779624" cy="6.16789258036129" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="3.7098796284779625" y="6.06789258036129">
+(3.6098796284779624, 6.16789258036129)
+</text>
+<circle cx="4.845850758584456" cy="1.5711596360218671" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="4.945850758584456" y="1.471159636021867">
+(4.845850758584456, 1.5711596360218671)
+</text>
+<circle cx="4.893435634078626" cy="3.5117252940245027" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="4.993435634078626" y="3.4117252940245026">
+(4.893435634078626, 3.5117252940245027)
+</text>
+<circle cx="5.775286932772011" cy="7.818460700072107" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="5.875286932772011" y="7.718460700072107">
+(5.775286932772011, 7.818460700072107)
+</text>
+<circle cx="6.474653719272594" cy="8.076475504905252" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="6.574653719272594" y="7.9764755049052525">
+(6.474653719272594, 8.076475504905252)
+</text>
+<circle cx="6.603479249112574" cy="1.3185319363286778" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="6.703479249112574" y="1.2185319363286777">
+(6.603479249112574, 1.3185319363286778)
+</text>
+<circle cx="6.989616732894852" cy="2.954439510938493" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="7.089616732894852" y="2.854439510938493">
+(6.989616732894852, 2.954439510938493)
+</text>
+<circle cx="6.9981650901430035" cy="2.3304037319389863" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="7.098165090143003" y="2.2304037319389862">
+(6.9981650901430035, 2.3304037319389863)
+</text>
+<circle cx="7.059653785564022" cy="4.667934232999937" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="7.159653785564021" y="4.567934232999938">
+(7.059653785564022, 4.667934232999937)
+</text>
+<circle cx="8.112141591031529" cy="8.786201522202798" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="8.212141591031529" y="8.686201522202799">
+(8.112141591031529, 8.786201522202798)
+</text>
+<circle cx="8.26310418467229" cy="4.297752500022197" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="8.36310418467229" y="4.197752500022197">
+(8.26310418467229, 4.297752500022197)
+</text>
+<circle cx="9.792717312585594" cy="4.430525275811034" fill="yellow" r="0.3"/>
+<text fill="white" font-size="0.15px" x="9.892717312585594" y="4.330525275811034">
+(9.792717312585594, 4.430525275811034)
+</text>
+<polygon fill="rgba(255, 0, 0, 0.5)" points="1.3184550526569028,9.97621706543531 1.2390999002751193,6.444672049512955 2.702798671576881,7.643580736241022" stroke="black" stroke-width="0.12"/>
+<line stroke="black" stroke-width="0.1" x1="1.2390999002751193" x2="1.3184550526569028" y1="6.444672049512955" y2="9.97621706543531"/>
+<line stroke="black" stroke-width="0.1" x1="1.2390999002751193" x2="2.702798671576881" y1="6.444672049512955" y2="7.643580736241022"/>
+<line stroke="black" stroke-width="0.1" x1="1.3184550526569028" x2="2.702798671576881" y1="9.97621706543531" y2="7.643580736241022"/>
+<circle cx="1.2390999002751193" cy="6.444672049512955" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.3390999002751194" y="6.344672049512956">
+(1.2390999002751193, 6.444672049512955)
+</text>
+<circle cx="1.3184550526569028" cy="9.97621706543531" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.4184550526569029" y="9.876217065435311">
+(1.3184550526569028, 9.97621706543531)
+</text>
+<circle cx="2.702798671576881" cy="7.643580736241022" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="2.802798671576881" y="7.543580736241022">
+(2.702798671576881, 7.643580736241022)
+</text>
 </svg>

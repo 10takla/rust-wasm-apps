@@ -1,3 +1,4 @@
+use crate::planet::shared::vector::VectorType;
 use crate::{
     planet::shared::vector::{ui::line::Line, Number, Vector},
     traits::of_to::{Of, To},
@@ -24,12 +25,20 @@ macro_rules! arithmetic_traits {
 
 arithmetic_traits!(Add => add => +, Sub => sub => -, Mul => mul => *, Div => div => /);
 
-impl<T: Number, const N: usize> Sub<Rc<Vector<T, N>>> for Line<T, N> {
+impl<T: Number, const N: usize> Sub<VectorType<T, N>> for Line<T, N> {
     type Output = Self;
-    fn sub(self, rhs: Rc<Vector<T, N>>) -> Self::Output {
+    fn sub(self, rhs: VectorType<T, N>) -> Self::Output {
         Line::of(
-            self.to::<[Rc<Vector<T, N>>; 2]>()
+            self.to::<[VectorType<T, N>; 2]>()
                 .map(|vector| *vector - *rhs),
         )
+    }
+}
+
+impl<T: Number, const N: usize> Mul for Line<T, N> {
+    type Output = T;
+    fn mul(self, rhs: Self) -> Self::Output {
+        let [ab, bc] = [self, rhs].map(|line| line.to::<Vector<T, N>>());
+        ab[0] * bc[0] + ab[1] * bc[1]
     }
 }

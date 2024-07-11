@@ -1,22 +1,25 @@
 mod impls;
 #[cfg(test)]
 mod tests;
+
 pub mod ui;
-
 use std::rc::Rc;
-
+use macros::Iterator;
+use serde::Serialize;
 use super::super::{Line, Vector};
+use crate::planet::shared::traits::As;
 use crate::traits::of_to::{Of, To};
 use crate::{
-    planet::shared::{point::DefaultMeasureValue, vector::Number},
+    planet::shared::{point::{DefaultMeasureValue, DEFAULT_MEASURE}, vector::Number},
     traits::as_prim::AsPrim,
 };
+use crate::planet::shared::vector::ui::line::LineType;
 
-#[derive(Clone)]
-pub struct Angle<T = DefaultMeasureValue, const N: usize = 2> {
+#[derive(Clone, Iterator)]
+pub struct Angle<T = DefaultMeasureValue, const N: usize = DEFAULT_MEASURE> {
     // линии расположны от центральной вершины к соседним
-    pub ba: Rc<Line<T, N>>,
-    pub bc: Rc<Line<T, N>>,
+    pub ba: LineType<T, N>,
+    pub bc: LineType<T, N>,
 }
 
 impl<T: Number, const N: usize> Angle<T, N> {
@@ -31,10 +34,9 @@ impl<T: Number, const N: usize> Angle<T, N> {
     }
 
     pub fn get_angle(&self) -> T {
-        let ba = Vector::of(&self.ba);
-        let bc = Vector::of(&self.bc);
+        let ba = Vector::of(&self.ba).as_::<f64>();
+        let bc = Vector::of(&self.bc).as_::<f64>();
         (ba.scalar(&bc) / (ba.radius() * bc.radius()))
-            .as_::<f64>()
             .acos()
             .to_degrees()
             .as_()

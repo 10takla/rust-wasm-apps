@@ -1,2 +1,2 @@
-mod shared;
-mod point_distribution;
+pub mod point_distribution;
+pub mod shared;

@@ -22,10 +22,30 @@ fn get_polar_angle() {
     check([[4, 4], [3, 2], [2, 3]], 71);
 
     check([[1.0, 0.0], [0.0, 0.0], [-2.0, 0.7]], 160);
+    check([[2.0, 0.5], [1.0, 0.5], [2.0, 2.0]], 56);
+    check([[1.0, 0.5], [2.0, 2.0], [2.5, 1.0]], 60);
+    check([[1.0, 0.5], [2.0, 2.0], [1.0, 2.0]], -56);
+}
+
+#[test]
+fn get_angle() {
+    fn check<T: Debug + Number, I: Number, const N: usize>(points: [Point<T, N>; 3], angle: I) {
+        assert_eq!(Angle::of(points).get_angle().as_::<I>(), angle);
+    }
+    check([[0, 0], [0, 0], [0, 0]], 0);
+    check([[1, 0], [0, 0], [0, 0]], 0);
+
+    check([[1, 0], [0, 0], [1, 1]], 45);
+
+    check([[1, 0, 0], [0, 0, 0], [1, 1, 0]], 45);
+
+    check([[1, 0, 1], [0, 0, 0], [1, 1, 0]], 60);
+
+    check([[1.0, 0.0, 0.5], [0.0; 3], [1.0, 1.0, 0.0]], 50);
 }
 
 mod from_lines {
-    use super::*;
+    // use super::*;
 
     // #[test]
     // #[should_panic]

@@ -1,4 +1,5 @@
 {
     "editor.fontSize": 14,
-    "rust-analyzer.checkOnSave": true
+    "rust-analyzer.checkOnSave": true,
+    "svg.preview.background": "editor"
 }

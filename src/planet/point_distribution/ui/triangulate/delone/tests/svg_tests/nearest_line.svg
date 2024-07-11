@@ -1,0 +1,30 @@
+<svg height="1080" viewBox="0 0 12 12" width="1080" xmlns="http://www.w3.org/2000/svg">
+<line stroke="black" stroke-width="0.1" x1="1" x2="1.5" y1="1" y2="2"/>
+<line stroke="black" stroke-width="0.1" x1="1.5" x2="1" y1="2" y2="5"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="1" y1="5" y2="1"/>
+<circle cx="1" cy="1" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.1" y="0.9">
+(1, 1)
+</text>
+<circle cx="1.5" cy="2" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.6" y="1.9">
+(1.5, 2)
+</text>
+<circle cx="1" cy="5" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.1" y="4.9">
+(1, 5)
+</text>
+<line stroke="white" stroke-width="0.1" x1="1.5" x2="1" y1="2" y2="5"/>
+<circle cx="1.5" cy="2" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.6" y="1.9">
+(1.5, 2)
+</text>
+<circle cx="1" cy="5" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.1" y="4.9">
+(1, 5)
+</text>
+<circle cx="2" cy="3" fill="red" r="0.3"/>
+<text fill="white" font-size="0.15px" x="2.1" y="2.9">
+(2, 3)
+</text>
+</svg>

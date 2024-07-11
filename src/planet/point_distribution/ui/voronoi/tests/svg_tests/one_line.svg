@@ -1,0 +1,74 @@
+<svg height="1080" viewBox="0 0 12 12" width="1080" xmlns="http://www.w3.org/2000/svg">
+<line stroke="black" stroke-width="0.1" x1="0.5" x2="0.5" y1="1.7421610841066304" y2="1.061004069480258"/>
+<line stroke="black" stroke-width="0.1" x1="0.5" x2="2" y1="1.061004069480258" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="1" y1="0.42815698216350295" y2="0.6779852569207931"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="0.5" y1="0.6779852569207931" y2="1.7421610841066304"/>
+<line stroke="black" stroke-width="0.1" x1="0.5" x2="0.5" y1="1.7421610841066304" y2="1.7421610841066304"/>
+<line stroke="black" stroke-width="0.1" x1="0.5" x2="1" y1="1.061004069480258" y2="1.9116029172562703"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="2" y1="1.9116029172562703" y2="1.9363802975184532"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2" y1="1.9363802975184532" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="0.5" y1="0.42815698216350295" y2="1.061004069480258"/>
+<line stroke="black" stroke-width="0.1" x1="0.5" x2="0.5" y1="1.061004069480258" y2="1.061004069480258"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2.5" y1="0.42815698216350295" y2="1.8898053487462727"/>
+<line stroke="black" stroke-width="0.1" x1="2.5" x2="1" y1="1.8898053487462727" y2="0.6779852569207931"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="2" y1="0.6779852569207931" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2" y1="0.42815698216350295" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="3" y1="0.42815698216350295" y2="0.6347951949504398"/>
+<line stroke="black" stroke-width="0.1" x1="3" x2="3" y1="0.6347951949504398" y2="1.6062370802049588"/>
+<line stroke="black" stroke-width="0.1" x1="3" x2="2.5" y1="1.6062370802049588" y2="1.8898053487462727"/>
+<line stroke="black" stroke-width="0.1" x1="2.5" x2="2" y1="1.8898053487462727" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2" y1="0.42815698216350295" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="1" y1="0.6779852569207931" y2="1.1118219913577967"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="2" y1="1.1118219913577967" y2="1.7403613484111071"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2.5" y1="1.7403613484111071" y2="1.8898053487462727"/>
+<line stroke="black" stroke-width="0.1" x1="2.5" x2="1" y1="1.8898053487462727" y2="0.6779852569207931"/>
+<line stroke="black" stroke-width="0.1" x1="1" x2="1" y1="0.6779852569207931" y2="0.6779852569207931"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="3" y1="1.9363802975184532" y2="0.6347951949504398"/>
+<line stroke="black" stroke-width="0.1" x1="3" x2="2" y1="0.6347951949504398" y2="0.42815698216350295"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2" y1="0.42815698216350295" y2="1.9363802975184532"/>
+<line stroke="black" stroke-width="0.1" x1="2" x2="2" y1="1.9363802975184532" y2="1.9363802975184532"/>
+<circle cx="0.5" cy="1.7421610841066304" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="0.6" y="1.6421610841066303">
+(0.5, 1.7421610841066304)
+</text>
+<circle cx="0.5" cy="1.061004069480258" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="0.6" y="0.9610040694802581">
+(0.5, 1.061004069480258)
+</text>
+<circle cx="2" cy="0.42815698216350295" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="2.1" y="0.328156982163503">
+(2, 0.42815698216350295)
+</text>
+<circle cx="1" cy="0.6779852569207931" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.1" y="0.5779852569207932">
+(1, 0.6779852569207931)
+</text>
+<circle cx="1" cy="1.9116029172562703" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.1" y="1.8116029172562702">
+(1, 1.9116029172562703)
+</text>
+<circle cx="2" cy="1.9363802975184532" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="2.1" y="1.836380297518453">
+(2, 1.9363802975184532)
+</text>
+<circle cx="2.5" cy="1.8898053487462727" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="2.6" y="1.7898053487462726">
+(2.5, 1.8898053487462727)
+</text>
+<circle cx="3" cy="0.6347951949504398" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="3.1" y="0.5347951949504398">
+(3, 0.6347951949504398)
+</text>
+<circle cx="3" cy="1.6062370802049588" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="3.1" y="1.5062370802049587">
+(3, 1.6062370802049588)
+</text>
+<circle cx="1" cy="1.1118219913577967" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="1.1" y="1.0118219913577966">
+(1, 1.1118219913577967)
+</text>
+<circle cx="2" cy="1.7403613484111071" fill="black" r="0.3"/>
+<text fill="white" font-size="0.15px" x="2.1" y="1.640361348411107">
+(2, 1.7403613484111071)
+</text>
+</svg>

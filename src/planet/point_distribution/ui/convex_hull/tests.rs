@@ -1,42 +1,98 @@
-use std::time::Instant;
-
-use crate::planet::shared::point::Points;
-
 use super::*;
+use crate::{
+    planet::shared::{
+        point::Point, traits::Svg, vector::ui::line::ui::angle::ui::triangle::ui::icosahedron::Path,
+    },
+    utils::svg::draw_svg,
+};
+use std::{iter::once, time::Instant};
 
-#[test]
-fn set_random_points() {
-    let points_count = 10;
-    let sizes = [5.0, 5.0];
-    let pd = PointDistribution::set_random_points(points_count, sizes);
+impl Svg for Hull<f64, 2> {
+    fn to_svg(&self, document: &mut svg::Document) {
+        let mut points = self.to::<Vec<Point<f64, 2>>>();
 
-    assert_eq!(pd.len(), points_count);
+        if points.len() == 0 {
+            return;
+        }
 
-    Points::of(pd).into_iter().for_each(|point| {
-        point.into_iter().enumerate().for_each(|(i, measure)| {
-            assert!(measure <= sizes[i]);
-        })
-    });
+        let [start_x, start_y] = points.remove(0);
+        let pa = points
+            .iter()
+            .chain(once(&[start_x, start_y]))
+            .map(|[x, y]| format!("L {x} {y}"))
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        *document = document
+            .clone()
+            .add(svg::node::element::Path::new().set("d", format!("M {start_x} {start_y} {pa} Z")));
+    }
+}
+
+impl Svg for Path<f64, 2> {
+    fn to_svg(&self, document: &mut svg::Document) {
+        let mut points = self.to::<Vec<Point<f64, 2>>>();
+
+        if points.len() == 0 {
+            return;
+        }
+
+        let [start_x, start_y] = points.remove(0);
+        let pa = points
+            .into_iter()
+            .map(|[x, y]| format!("L {x} {y}"))
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        *document = document
+            .clone()
+            .add(svg::node::element::Path::new().set("d", format!("M {start_x} {start_y} {pa} Z")));
+    }
 }
 
 #[test]
 fn convex_hull() {
-    let pd = PointDistribution::<f64>::of(vec![
-        [0.0, 0.0],
-        [1.0, -0.2],
-        [2.0, 1.0],
-        [1.8, 2.0],
-        [0.7, 2.1],
-        [0.2, 1.6],
-    ]);
-    assert_eq!(
-        pd.convex_hull(),
-        vec![0, 1, 2, 3, 4, 5]
-            .into_iter()
-            .enumerate()
-            .map(|(ii, i)| Rc::new(Line::of([&pd[i], &pd[(ii + 1) % pd.len()]])))
-            .collect::<Vec<Rc<Line>>>()
+    let check = |points, inds: Vec<usize>| {
+        let mut pd = PointDistribution::of(points);
+        draw_svg(vec![&pd.0], "vecs", module_path!(), "");
+        let [lines1, lines2] = [
+            inds.into_iter()
+                .map(|i| &pd[i])
+                .collect::<Vec<_>>()
+                .to::<Hull>(),
+            pd.convex_hull(),
+        ];
+        draw_svg(vec![&lines2], "lines", module_path!(), "");
+        assert_eq!(lines1, lines2);
+    };
+
+    check(
+        vec![
+            [0.0, 0.0],
+            [1.0, -0.2],
+            [2.0, 1.0],
+            [1.8, 2.0],
+            [0.7, 2.1],
+            [0.2, 1.6],
+        ],
+        vec![0, 1, 2, 3, 4, 5],
     );
+
+    check(
+        vec![[0.0, 1.0], [2.0, 2.0], [2.0, 5.0], [2.0, 9.0]],
+        vec![0, 1, 2, 3],
+    );
+
+    check(
+        vec![[2.0, 1.0], [2.0, 3.0], [3.0, 2.0], [4.0, 1.0]],
+        vec![0, 3, 2, 1],
+    );
+
+    check(vec![[0.0, 1.0], [2.0, 2.0]], vec![0, 1]);
+
+    check(vec![[0.0, 1.0]], vec![0]);
+
+    check(vec![], vec![]);
 }
 
 #[test]
@@ -52,7 +108,7 @@ fn get_angle() {
 #[ignore]
 fn prefomance_set_random_points() {
     let start = Instant::now();
-    let pd = PointDistribution::set_random_points(100000, [5.0, 5.0]);
+    let mut pd = PointDistribution::set_random_points(100000, [[0.0, 0.0], [5.0, 5.0]]);
 
     let edges = pd.convex_hull();
 

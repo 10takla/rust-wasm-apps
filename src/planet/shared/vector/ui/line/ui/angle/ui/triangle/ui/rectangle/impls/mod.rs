@@ -1,11 +1,11 @@
-mod alien;
 mod find;
 mod has;
 mod iterator;
 mod of_to;
+mod alien;
 
 use super::Rectangle;
-use crate::planet::shared::vector::{ui::line::ui::angle::ui::triangle::Triangle, Number};
+use crate::planet::shared::{traits::Svg, vector::{ui::line::ui::angle::ui::triangle::Triangle, Number}};
 use std::fmt::Debug;
 
 // Debug
@@ -17,3 +17,4 @@ impl<T: Number, const N: usize> Debug for Rectangle<T, N> {
             .finish()
     }
 }
+

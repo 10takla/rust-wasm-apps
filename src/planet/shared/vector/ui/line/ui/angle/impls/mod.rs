@@ -1,9 +1,7 @@
-mod iterator;
 mod of_to;
 mod ordering;
 
 use super::Angle;
-
 use crate::{
     planet::shared::{
         traits::Has,
@@ -13,6 +11,7 @@ use crate::{
 };
 use std::rc::Rc;
 use std::fmt::Debug;
+use crate::planet::shared::vector::ui::line::LineType;
 
 // Debug
 impl<T: Number, const N: usize> Debug for Angle<T, N> {
@@ -27,8 +26,8 @@ impl<T: Number, const N: usize> Debug for Angle<T, N> {
 }
 
 // Has
-impl<T: Number, const N: usize> Has<Rc<Line<T, N>>> for Angle<T, N> {
-    fn has(&self, line: &Rc<Line<T, N>>) -> bool {
+impl<T: Number, const N: usize> Has<LineType<T, N>> for Angle<T, N> {
+    fn has(&self, line: &LineType<T, N>) -> bool {
         self.clone()
             .into_iter()
             .any(|angle_line| Rc::ptr_eq(&angle_line, &line.clone()))

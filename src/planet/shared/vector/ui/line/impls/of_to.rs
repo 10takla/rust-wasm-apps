@@ -1,3 +1,7 @@
+use macros::of_to;
+
+use crate::planet::shared::vector::ui::line::LineType;
+use crate::planet::shared::vector::VectorType;
 use crate::{
     planet::shared::{
         point::Point,
@@ -8,8 +12,12 @@ use crate::{
 use std::rc::Rc;
 
 // from Vector
-impl<T: Number, const N: usize> Of<Vec<Rc<Vector<T, N>>>> for Vec<Rc<Line<T, N>>> {
-    fn of(vecs: Vec<Rc<Vector<T, N>>>) -> Self {
+impl<T: Number, const N: usize> Of<Vec<VectorType<T, N>>> for Vec<LineType<T, N>> {
+    fn of(vecs: Vec<VectorType<T, N>>) -> Self {
+        if vecs.len() <= 1 {
+            return vec![];
+        }
+
         vecs[0..vecs.len() - 1]
             .iter()
             .enumerate()
@@ -18,26 +26,9 @@ impl<T: Number, const N: usize> Of<Vec<Rc<Vector<T, N>>>> for Vec<Rc<Line<T, N>>
     }
 }
 
-impl<T: Copy, const N: usize> Of<[Vector<T, N>; 2]> for Line<T, N> {
-    fn of(vecs: [Vector<T, N>; 2]) -> Self {
-        Self {
-            a: Rc::new(vecs[0]),
-            b: Rc::new(vecs[1]),
-        }
-    }
-}
-
-impl<T: Copy, const N: usize> Of<[Rc<Vector<T, N>>; 2]> for Line<T, N> {
-    fn of(vecs: [Rc<Vector<T, N>>; 2]) -> Self {
-        Self {
-            a: vecs[0].clone(),
-            b: vecs[1].clone(),
-        }
-    }
-}
-
-impl<T: Copy, const N: usize> Of<[&Rc<Vector<T, N>>; 2]> for Line<T, N> {
-    fn of(vecs: [&Rc<Vector<T, N>>; 2]) -> Self {
+#[of_to]
+impl<T: Number, const N: usize> Of<[Rc<Vector<T, N>>; 2]> for Line<T, N> {
+    fn of(vecs: [VectorType<T, N>; 2]) -> Self {
         Self {
             a: vecs[0].clone(),
             b: vecs[1].clone(),
@@ -46,6 +37,7 @@ impl<T: Copy, const N: usize> Of<[&Rc<Vector<T, N>>; 2]> for Line<T, N> {
 }
 
 // from Point
+#[of_to]
 impl<T: Number, const N: usize> Of<[Point<T, N>; 2]> for Line<T, N> {
     fn of(points: [Point<T, N>; 2]) -> Self {
         Self {
@@ -55,60 +47,90 @@ impl<T: Number, const N: usize> Of<[Point<T, N>; 2]> for Line<T, N> {
     }
 }
 
-// for Vector
-impl<T: Copy, const N: usize> Of<Line<T, N>> for [Vector<T, N>; 2] {
+// for LineType
+impl<T, const N: usize> Of<Line<T, N>> for LineType<T, N> {
     fn of(line: Line<T, N>) -> Self {
-        [*line.a, *line.b]
+        Rc::new(line)
     }
 }
 
-impl<T, const N: usize> Of<Line<T, N>> for [Rc<Vector<T, N>>; 2] {
+impl<T: Number, const N: usize> Of<&Line<T, N>> for LineType<T, N> {
+    fn of(line: &Line<T, N>) -> Self {
+        (*line).clone().to()
+    }
+}
+
+impl<T: Copy + Number, const N: usize> Of<&Vec<Line<T, N>>> for Vec<LineType<T, N>> {
+    fn of(lines: &Vec<Line<T, N>>) -> Self {
+        lines.into_iter().map(|line| line.to()).collect()
+    }
+}
+
+impl<T: Copy + Number, const N: usize> Of<&Vec<&Line<T, N>>> for Vec<LineType<T, N>> {
+    fn of(lines: &Vec<&Line<T, N>>) -> Self {
+        lines.into_iter().map(|&line| line.to()).collect()
+    }
+}
+
+// for Line
+impl<T: Copy + Number, const N: usize> Of<Vec<LineType<T, N>>> for Vec<Line<T, N>> {
+    fn of(lines: Vec<LineType<T, N>>) -> Self {
+        lines.into_iter().map(|line| (*line).clone()).collect()
+    }
+}
+
+impl<T: Copy + Number, const N: usize> Of<&Vec<LineType<T, N>>> for Vec<Line<T, N>> {
+    fn of(lines: &Vec<LineType<T, N>>) -> Self {
+        lines.clone().to()
+    }
+}
+
+impl<T: Copy + Number, const N: usize> Of<Vec<Line<T, N>>> for Vec<Line<T, N>> {
+    fn of(lines: Vec<Line<T, N>>) -> Self {
+        lines
+            .into_iter()
+            .map(|line| Rc::new(line))
+            .collect::<Vec<LineType<T, N>>>()
+            .to()
+    }
+}
+
+impl<T: Copy + Number, const N: usize> Of<Vec<&Line<T, N>>> for Vec<Line<T, N>> {
+    fn of(lines: Vec<&Line<T, N>>) -> Self {
+        lines
+            .into_iter()
+            .map(|line| line.clone())
+            .collect::<Vec<Line<T, N>>>()
+            .to()
+    }
+}
+
+// for Vector
+#[of_to]
+impl<T: Clone, const N: usize> Of<Line<T, N>> for [Rc<Vector<T, N>>; 2] {
     fn of(line: Line<T, N>) -> Self {
         [line.a, line.b]
     }
 }
 
-impl<T, const N: usize> Of<&Line<T, N>> for [Rc<Vector<T, N>>; 2] {
-    fn of(line: &Line<T, N>) -> Self {
-        [line.a.clone(), line.b.clone()]
+trait Map<T> {
+    type Output;
+    fn map(&self, handle: impl Fn(T) -> T) -> Self::Output;
+}
+impl<T, const N: usize> Map<Rc<Vector<T, N>>> for LineType<T, N> {
+    type Output = [VectorType<T, N>; 2];
+    fn map(&self, handle:  impl Fn(Rc<Vector<T, N>>) -> Rc<Vector<T, N>>) -> Self::Output {
+        [self.a.clone(), self.b.clone()].map(handle)
     }
 }
 
-impl<T, const N: usize> Of<Rc<Line<T, N>>> for [Rc<Vector<T, N>>; 2] {
-    fn of(line: Rc<Line<T, N>>) -> Self {
-        [line.a.clone(), line.b.clone()]
-    }
-}
-
-impl<T: Number, const N: usize> Of<Line<T, N>> for Vector<T, N> {
-    fn of(line: Line<T, N>) -> Self {
-        *line.b - *line.a
-    }
-}
-
-impl<T: Number, const N: usize> Of<&Line<T, N>> for Vector<T, N> {
-    fn of(line: &Line<T, N>) -> Self {
-        *line.b - *line.a
-    }
-}
-
-impl<T: Number, const N: usize> Of<Rc<Line<T, N>>> for Vector<T, N> {
-    fn of(line: Rc<Line<T, N>>) -> Self {
-        *line.b - *line.a
-    }
-}
-
-impl<T: Number, const N: usize> Of<&Rc<Line<T, N>>> for Vector<T, N> {
-    fn of(line: &Rc<Line<T, N>>) -> Self {
-        *line.b - *line.a
-    }
-}
-
-impl<T: Copy + Number, const N: usize> Of<&Vec<Rc<Line<T, N>>>> for Vec<Rc<Vector<T, N>>> {
-    fn of(triangles: &Vec<Rc<Line<T, N>>>) -> Self {
-        (*triangles).clone()
+#[of_to]
+impl<T: Copy + Number, const N: usize> Of<Vec<LineType<T, N>>> for Vec<VectorType<T, N>> {
+    fn of(lines: Vec<LineType<T, N>>) -> Self {
+        lines
+            .clone()
             .into_iter()
-            .map(|triangle| triangle.to::<[Rc<Vector<T, N>>; 2]>())
+            .map(|triangle| triangle.to::<[VectorType<T, N>; 2]>())
             .flatten()
             .fold(vec![], |mut acc, curr| {
                 if !acc.contains(&curr) {
@@ -119,10 +141,40 @@ impl<T: Copy + Number, const N: usize> Of<&Vec<Rc<Line<T, N>>>> for Vec<Rc<Vecto
     }
 }
 
+impl<T: Copy + Number, const N: usize> Of<Vec<Line<T, N>>> for Vec<VectorType<T, N>> {
+    fn of(lines: Vec<Line<T, N>>) -> Self {
+        lines
+            .into_iter()
+            .map(|line| Rc::new(line))
+            .collect::<Vec<LineType<T, N>>>()
+            .to()
+    }
+}
+
+impl<T: Copy + Number, const N: usize> Of<Vec<&Line<T, N>>> for Vec<VectorType<T, N>> {
+    fn of(lines: Vec<&Line<T, N>>) -> Self {
+        lines
+            .into_iter()
+            .map(|line| line.clone())
+            .collect::<Vec<Line<T, N>>>()
+            .to()
+    }
+}
+
+#[of_to]
+impl<T: Number, const N: usize> Of<Rc<Line<T, N>>> for Vector<T, N> {
+    fn of(line: Rc<Line<T, N>>) -> Self {
+        *line.b - *line.a
+    }
+}
+
 // for Point
+#[of_to]
 impl<T: Copy, const N: usize> Of<Line<T, N>> for [Point<T, N>; 2] {
     fn of(line: Line<T, N>) -> Self {
-        let vecs: [Rc<Vector<T, N>>; 2] = line.to();
+        let vecs: [VectorType<T, N>; 2] = line.to();
         [(*vecs[0]).to(), (*vecs[1]).to()]
     }
 }
+
+

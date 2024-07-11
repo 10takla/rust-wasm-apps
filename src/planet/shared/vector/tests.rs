@@ -1,4 +1,4 @@
-use crate::{planet::{point_distribution::ui::triangulate::Triangulate, shared::traits::As}, traits::of_to::Of};
+use crate::{planet::{point_distribution::ui::triangulate::Triangulate, shared::traits::{As, Normalize}}, traits::of_to::Of};
 
 use std::{any::type_name, mem, time::Instant};
 
@@ -27,6 +27,12 @@ fn vector_from() {
         let v_f64: Vector<f64> = vector.as_();
         assert_eq!(*v_f64, [1.0; 2]);
     }
+}
+
+#[test]
+fn normalize() {
+    assert_eq!(Vector::of([0.4, 0.]).normalize().0, Vector::of([1., 0.]).0);
+    assert_eq!(Vector::of([0., 0.2]).normalize().0, Vector::of([0., 1.]).0);
 }
 
 #[test]
@@ -78,7 +84,7 @@ fn perfomance_vector_system() {
             Triangle::of([[2.0, 3.0], [4.0, 8.0], [1.0, 1.0]]).get_circle();
         },
         // "trinagulate" => {
-        //     PointDistribution::set_random_points(2000, [1.0; 2]).triangulate();
+        //     PointDistribution::set_random_points(2000, [[0.0,0.0],[1.0; 2]]).triangulate();
         // }
     );
 }

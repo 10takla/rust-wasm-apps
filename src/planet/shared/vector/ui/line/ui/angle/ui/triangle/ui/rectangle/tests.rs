@@ -4,10 +4,7 @@ use crate::{
     planet::shared::{
         point::Point,
         vector::{
-            ui::line::{
-                ui::angle::ui::triangle::{ui::rectangle::Rectangle, Triangle},
-                Line,
-            },
+            ui::line::{ui::angle::ui::triangle::ui::rectangle::Rectangle, Line},
             Vector,
         },
     },

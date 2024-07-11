@@ -16,9 +16,14 @@ serde = {version = "1.0.196", features = ["derive"]}
 serde-wasm-bindgen = "0.6.3"
 serde_json = "1.0.113"
 serde_tuple = "0.5.0"
+spherical_voronoi = "0.5.1"
 svg = "0.16.0"
+triangulate = "0.2.0"
 wasm-bindgen = {version = "0.2.84", features = []}
-wasm-bindgen-test = "0.3.40"
+wasm-bindgen-test = "0.3.42"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[build]
+rustflags = ["-C", "link-arg=-R", "RUST_BACKTRACE=1"]

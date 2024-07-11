@@ -1,3 +1,6 @@
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::TriangleType;
+use crate::planet::shared::vector::ui::line::LineType;
+use crate::planet::shared::vector::VectorType;
 use crate::{
     planet::shared::{
         point::Point,
@@ -13,8 +16,8 @@ use crate::{
 };
 use std::fmt::Debug;
 use std::rc::Rc;
+use macros::of_to;
 
-/* -------FROM------- */
 
 // from Angle
 impl<T: Copy, const N: usize> Of<[Angle<T, N>; 3]> for Triangle<T, N> {
@@ -28,8 +31,9 @@ impl<T: Copy, const N: usize> Of<[Angle<T, N>; 3]> for Triangle<T, N> {
 }
 
 // from Line
-impl<T: Number, const N: usize> Of<[Line<T, N>; 3]> for Triangle<T, N> {
-    fn of(lines: [Line<T, N>; 3]) -> Self {
+#[of_to]
+impl<T: Number, const N: usize> Of<[Rc<Line<T, N>>; 3]> for Triangle<T, N> {
+    fn of(lines: [Rc<Line<T, N>>; 3]) -> Self {
         let [ab, bc, ac] = [0, 1, 2].map(|ind| Rc::new(lines[ind].clone()));
         Self {
             cab: Rc::new([ab.clone(), ac.clone()].to()),
@@ -40,58 +44,11 @@ impl<T: Number, const N: usize> Of<[Line<T, N>; 3]> for Triangle<T, N> {
 }
 
 // from Vector
-impl<T: Number, const N: usize> Of<Vec<Rc<Vector<T, N>>>> for Triangle<T, N> {
-    fn of(vecs: Vec<Rc<Vector<T, N>>>) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([&vecs[inds[0]], &vecs[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[Vector<T, N>; 3]> for Triangle<T, N> {
-    fn of(vecs: [Vector<T, N>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] =
-            [[0, 1], [0, 2], [1, 2]].map(|inds| Rc::new(Line::of([vecs[inds[0]], vecs[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[&Vector<T, N>; 3]> for Triangle<T, N> {
-    fn of(vecs: [&Vector<T, N>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([*vecs[inds[0]], *vecs[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
+#[of_to]
 impl<T: Number, const N: usize> Of<[Rc<Vector<T, N>>; 3]> for Triangle<T, N> {
     fn of(vecs: [Rc<Vector<T, N>>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
+        let lines: [LineType<T, N>; 3] = [[0, 1], [0, 2], [1, 2]]
             .map(|inds| Rc::new(Line::of([&vecs[inds[0]], &vecs[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
-impl<T: Number, const N: usize> Of<[&Rc<Vector<T, N>>; 3]> for Triangle<T, N> {
-    fn of(vecs: [&Rc<Vector<T, N>>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] =
-            [[0, 1], [0, 2], [1, 2]].map(|inds| Rc::new(Line::of([vecs[inds[0]], vecs[inds[1]]])));
         Self {
             cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
             abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
@@ -101,21 +58,10 @@ impl<T: Number, const N: usize> Of<[&Rc<Vector<T, N>>; 3]> for Triangle<T, N> {
 }
 
 // from Point
-impl<T: Number, const N: usize> Of<Vec<Point<T, N>>> for Triangle<T, N> {
-    fn of(points: Vec<Point<T, N>>) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
-            .map(|inds| Rc::new(Line::of([points[inds[0]], points[inds[1]]])));
-        Self {
-            cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
-            abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
-            bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
-        }
-    }
-}
-
+#[of_to]
 impl<T: Number, const N: usize> Of<[Point<T, N>; 3]> for Triangle<T, N> {
     fn of(points: [Point<T, N>; 3]) -> Self {
-        let lines: [Rc<Line<T, N>>; 3] = [[0, 1], [0, 2], [1, 2]]
+        let lines: [LineType<T, N>; 3] = [[0, 1], [0, 2], [1, 2]]
             .map(|inds| Rc::new(Line::of([points[inds[0]], points[inds[1]]])));
         Self {
             cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
@@ -124,8 +70,32 @@ impl<T: Number, const N: usize> Of<[Point<T, N>; 3]> for Triangle<T, N> {
         }
     }
 }
+// impl<T: Number, const N: usize> Of<Vec<Point<T, N>>> for Triangle<T, N> {
+//     fn of(points: Vec<Point<T, N>>) -> Self {
+//         let lines: [LineType<T, N>; 3] = [[0, 1], [0, 2], [1, 2]]
+//             .map(|inds| Rc::new(Line::of([points[inds[0]], points[inds[1]]])));
+//         Self {
+//             cab: Rc::new([lines[0].clone(), lines[1].clone()].to()),
+//             abc: Rc::new([lines[0].clone(), lines[2].clone()].to()),
+//             bca: Rc::new([lines[1].clone(), lines[2].clone()].to()),
+//         }
+//     }
+// }
 
 /* -------FOR------- */
+
+// for TriangleType
+impl<T: Debug + Copy + Number, const N: usize> Of<Triangle<T, N>> for TriangleType<T, N> {
+    fn of(tri: Triangle<T, N>) -> Self {
+        Rc::new(tri)
+    }
+}
+
+impl<T: Debug + Copy + Number, const N: usize> Of<&Triangle<T, N>> for TriangleType<T, N> {
+    fn of(tri: &Triangle<T, N>) -> Self {
+        tri.clone().to()
+    }
+}
 
 // for Angle
 impl<T: Debug + Copy + Number, const N: usize> Of<Triangle<T, N>> for [Rc<Angle<T, N>>; 3] {
@@ -150,35 +120,38 @@ impl<T: Debug + Copy + Number, const N: usize> Of<&Triangle<T, N>> for [Rc<Angle
 }
 
 // for Line
-impl<T: Debug + Copy + Number, const N: usize> Of<Triangle<T, N>> for [Line<T, N>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        Rc::new(triangle).to()
+impl<T: Copy + Number, const N: usize> Of<Vec<Rc<Triangle<T, N>>>> for Vec<LineType<T, N>> {
+    fn of(triangles: Vec<Rc<Triangle<T, N>>>) -> Self {
+        triangles
+            .into_iter()
+            .map(|triangle| triangle.to::<[LineType<T, N>; 3]>())
+            .flatten()
+            .fold(vec![], |mut acc, line| {
+                if !acc.contains(&line) {
+                    acc.push(line);
+                }
+                acc
+            })
+    }
+}
+impl<T: Copy + Number, const N: usize> Of<&Vec<Rc<Triangle<T, N>>>> for Vec<LineType<T, N>> {
+    fn of(triangles: &Vec<Rc<Triangle<T, N>>>) -> Self {
+        triangles.clone().to()
     }
 }
 
-impl<T: Debug + Copy + Number, const N: usize> Of<Triangle<T, N>> for [Rc<Line<T, N>>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        Rc::new(triangle).to()
-    }
-}
-
-impl<T: Debug + Copy + Number, const N: usize> Of<Rc<Triangle<T, N>>> for [Line<T, N>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        triangle.to::<[Rc<Line<T, N>>; 3]>().map(|line| (*line).clone())
-    }
-}
-
+#[of_to]
 impl<T: Debug + Copy + Number, const N: usize> Of<Rc<Triangle<T, N>>> for [Rc<Line<T, N>>; 3] {
     fn of(triangle: Rc<Triangle<T, N>>) -> Self {
         (*triangle)
             .clone()
             .into_iter()
-            .map(|angle| angle.to::<[Rc<Line<T, N>>; 2]>())
+            .map(|angle| angle.to::<[LineType<T, N>; 2]>())
             .flatten()
             .into_iter()
             .fold(
                 vec![],
-                |mut acc: Vec<Rc<Line<T, N>>>, line: Rc<Line<T, N>>| {
+                |mut acc: Vec<LineType<T, N>>, line: LineType<T, N>| {
                     if !acc.contains(&line) {
                         acc.push(line)
                     }
@@ -190,64 +163,19 @@ impl<T: Debug + Copy + Number, const N: usize> Of<Rc<Triangle<T, N>>> for [Rc<Li
     }
 }
 
-impl<T: Debug + Copy + Number, const N: usize> Of<&Rc<Triangle<T, N>>> for [Rc<Line<T, N>>; 3] {
-    fn of(triangle: &Rc<Triangle<T, N>>) -> Self {
-        (*triangle).clone().to()
-    }
-}
-
-impl<T: Copy + Number, const N: usize> Of<&Vec<Rc<Triangle<T, N>>>> for Vec<Rc<Line<T, N>>> {
-    fn of(triangles: &Vec<Rc<Triangle<T, N>>>) -> Self {
-        (*triangles)
-            .clone()
-            .into_iter()
-            .map(|triangle| triangle.to::<[Rc<Line<T, N>>; 3]>())
-            .flatten()
-            .fold(vec![], |mut acc, line| {
-                if !acc.contains(&line) {
-                    acc.push(line);
-                }
-                acc
-            })
-    }
-}
-
 // for Vector
-impl<T: Copy, const N: usize> Of<Triangle<T, N>> for [Vector<T, N>; 3] {
-    fn of(triangle: Triangle<T, N>) -> Self {
-        (*triangle.abc).clone().to()
-    }
-}
-
-impl<T: Copy, const N: usize> Of<&Triangle<T, N>> for [Vector<T, N>; 3] {
-    fn of(triangle: &Triangle<T, N>) -> Self {
-        (*triangle.abc).clone().to()
-    }
-}
-
+#[of_to]
 impl<T: Copy, const N: usize> Of<Triangle<T, N>> for [Rc<Vector<T, N>>; 3] {
     fn of(triangle: Triangle<T, N>) -> Self {
         (*triangle.abc).clone().to()
     }
 }
 
-impl<T: Copy, const N: usize> Of<Rc<Triangle<T, N>>> for [Vector<T, N>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        triangle.abc.clone().to()
-    }
-}
-
-impl<T: Copy, const N: usize> Of<Rc<Triangle<T, N>>> for [Rc<Vector<T, N>>; 3] {
-    fn of(triangle: Rc<Triangle<T, N>>) -> Self {
-        triangle.abc.clone().to()
-    }
-}
-
-impl<T: Copy + Number, const N: usize> Of<Vec<Triangle<T, N>>> for Vec<Rc<Vector<T, N>>> {
+impl<T: Copy + Number, const N: usize> Of<Vec<Triangle<T, N>>> for Vec<VectorType<T, N>> {
     fn of(triangles: Vec<Triangle<T, N>>) -> Self {
         triangles
             .into_iter()
-            .map(|triangle| triangle.to::<[Rc<Vector<T, N>>; 3]>())
+            .map(|triangle| triangle.to::<[VectorType<T, N>; 3]>())
             .flatten()
             .fold(vec![], |mut acc, vector| {
                 if !acc.contains(&vector) {
@@ -258,34 +186,19 @@ impl<T: Copy + Number, const N: usize> Of<Vec<Triangle<T, N>>> for Vec<Rc<Vector
     }
 }
 
-impl<T: Copy + Number, const N: usize> Of<Vec<Rc<Triangle<T, N>>>> for Vec<Rc<Vector<T, N>>> {
+impl<T: Copy + Number, const N: usize> Of<Vec<Rc<Triangle<T, N>>>> for Vec<VectorType<T, N>> {
     fn of(triangles: Vec<Rc<Triangle<T, N>>>) -> Self {
         triangles
             .into_iter()
-            .map(|triangle| triangle.to::<[Rc<Vector<T, N>>; 3]>())
-            .flatten()
-            .fold(vec![], |mut acc, vector| {
-                if !acc.contains(&vector) {
-                    acc.push(vector);
-                }
-                acc
-            })
+            .map(|triangle| (*triangle).clone())
+            .collect::<Vec<Triangle<T, N>>>()
+            .to()
     }
 }
 
-impl<T: Copy + Number, const N: usize> Of<&Vec<Rc<Triangle<T, N>>>> for Vec<Rc<Vector<T, N>>> {
+impl<T: Copy + Number, const N: usize> Of<&Vec<Rc<Triangle<T, N>>>> for Vec<VectorType<T, N>> {
     fn of(triangles: &Vec<Rc<Triangle<T, N>>>) -> Self {
-        (*triangles)
-            .clone()
-            .into_iter()
-            .map(|triangle| triangle.to::<[Rc<Vector<T, N>>; 3]>())
-            .flatten()
-            .fold(vec![], |mut acc, vector| {
-                if !acc.contains(&vector) {
-                    acc.push(vector);
-                }
-                acc
-            })
+        (*triangles).clone().to()
     }
 }
 

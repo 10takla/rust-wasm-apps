@@ -1,6 +1,17 @@
 #[cfg(test)]
 mod tests;
 
+use crate::planet::shared::point::{DefaultMeasureValue, DEFAULT_MEASURE};
+use crate::planet::shared::traits::{Find, Svg, SvgStyle};
+use crate::planet::shared::vector::svg::VectorStyle;
+use crate::planet::shared::vector::ui::line::svg::LineStyle;
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::svg::TriangleStyle;
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::ui::hull::Hull;
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::ui::rectangle::svg::RectangleStyle;
+use crate::planet::shared::vector::ui::line::ui::angle::ui::triangle::TriangleType;
+use crate::planet::shared::vector::ui::line::LineType;
+use crate::planet::shared::vector::VectorType;
+use crate::utils::svg::draw_svg;
 use crate::{
     planet::{
         point_distribution::{ui::convex_hull::ConvexHull, PointDistribution},
@@ -14,187 +25,153 @@ use crate::{
                     },
                     Line,
                 },
-                Vector,
+                Number, Vector,
             },
         },
     },
-    traits::of_to::{Of, To},
+    traits::{
+        as_prim::AsPrim,
+        of_to::{Of, To},
+    },
 };
+use std::cmp::Ordering;
+use std::iter::once;
 use std::rc::Rc;
+use std::thread;
+use std::time::{Duration, Instant};
+use svg::node::Value;
 
-pub trait Delone {
-    fn triangulate(&self) -> Vec<Rc<Triangle>>;
-    fn get_start_point(&self) -> Vec<Rectangle>;
-    fn get_scope_lines(lines: Vec<Rc<Line>>, next_vec: &Rc<Vector>) -> Vec<Rc<Line>>;
+pub trait Delone<T = DefaultMeasureValue, const N: usize = DEFAULT_MEASURE> {
+    fn triangulate(&mut self) -> Vec<TriangleType<T>>;
 }
 
-impl Delone for PointDistribution {
-    fn triangulate(&self) -> Vec<Rc<Triangle>> {
-        let sorted_pd = self.clone().sort_points_by_min();
-        let mut rects = sorted_pd.get_start_point();
-
-        for vector in sorted_pd.clone().iter().skip(4) {
-            Self::get_next_point(vector, &mut rects);
+impl<T: Number + Into<Value>> Delone<T> for PointDistribution<T> {
+    fn triangulate(&mut self) -> Vec<TriangleType<T>> {
+        if self.len() < 3 {
+            return vec![];
         }
 
-        rects
-            .into_iter()
-            .map(|rect| rect.to::<[Rc<Triangle>; 2]>())
-            .flatten()
-            .fold(vec![], |mut acc, curr| {
-                if !acc.contains(&curr) {
-                    acc.push(curr);
-                }
-                acc
-            })
+        draw_svg(vec![&self.0], "tmp", module_path!(), "tests");
+
+        self.sort_points_by_min();
+
+        let mut tries = vec![self[0..3].to::<TriangleType<T>>()];
+
+        for i in 3..self.len() {
+            let next_vec = &self[i];
+            let scope_lines = self.get_scope_lines(self[..i].to_vec().to(), next_vec);
+
+            for line in scope_lines {
+                let new_tri = Triangle::of([&line.a, &line.b, next_vec]);
+            }
+
+            break;
+        }
+
+        tries
     }
+}
 
-    fn get_start_point(&self) -> Vec<Rectangle> {
-        let start_tri = Triangle::of(self[0..=2].to_vec());
+impl<T: Number, const N: usize> Nearest<Vec<LineType<T, N>>, LineType<T, N>> for VectorType<T, N> {
+    fn nearest(&self, lines: &Vec<LineType<T, N>>) -> LineType<T, N> {
+        lines
+            .into_iter()
+            .min_by(|&line_a, &line_b| {
+                let length = |ab: &Rc<Line<T, N>>| {
+                    let [ae, be]: [Line<T, N>; 2] =
+                        [Line::of([&ab.a, self]), Line::of([&ab.b, self])];
 
-        let next_vec = self[3].clone();
-        let scope_lines = Self::get_scope_lines(
-            PointDistribution::of(start_tri.clone().to::<[Rc<Vector>; 3]>().clone().to_vec())
-                .convex_hull(),
-            &next_vec,
+                    let [ab_ae, ab_be] = [(**ab).clone() * ae.clone(), (**ab).clone() * be.clone()];
+                    if ab_ae < 0.as_::<T>() {
+                        ae.length()
+                    } else if ab_be > 0.as_::<T>() {
+                        be.length()
+                    } else {
+                        let [c, y] = [ab.to::<Vector<T, N>>(), ae.to::<Vector<T, N>>()];
+                        ((c[0] * y[1] - c[1] * y[0]).as_::<f64>().abs().as_::<T>()) / ab.length()
+                    }
+                };
+
+                let t = length(line_a).partial_cmp(&length(line_b)).unwrap();
+                if let Ordering::Equal = t {
+                    return length(&Rc::new(line_a.reverse())).partial_cmp(&length(line_b)).unwrap();
+                }
+                
+                t
+            })
+            .unwrap()
+            .clone()
+    }
+}
+
+#[test]
+fn nearest_line() {
+    let vecs = vec![[1., 1.], [1.5, 2.], [1., 5.]].to::<Vec<VectorType>>();
+    let vector = VectorType::of([2., 3.]);
+    let lines: Vec<Rc<Line>> = Hull::of(vecs).0.0;
+    let line = vector.nearest(&lines);
+
+    draw_svg(
+        vec![
+            &SvgStyle(lines.clone(), LineStyle::default()),
+            &SvgStyle(line.clone(), LineStyle::default().set_color("white")),
+            &SvgStyle(vector.clone(), VectorStyle::default().set_color("red")),
+        ],
+        "nearest_line",
+        module_path!(),
+        "tests",
+    );
+}
+
+impl<T: Number + Into<Value>> PointDistribution<T> {
+    fn get_scope_lines(
+        &self,
+        mut pd: PointDistribution<T>,
+        vector: &Rc<Vector<T>>,
+    ) -> Vec<LineType<T>> {
+        let convex_hull = pd.convex_hull();
+        let near_vector = pd.nearest(vector);
+
+        let line = vector.nearest(&convex_hull.0);
+
+        let lines = convex_hull.0.find(&near_vector);
+        dbg!(&lines);
+        // dbg!(&vector, &near_vector);
+        draw_svg(
+            vec![
+                &self.0,
+                &SvgStyle(dbg!(line).clone(), LineStyle::default().set_color("white")),
+                &SvgStyle(vector.clone(), VectorStyle::default().set_color("red")),
+                &SvgStyle(
+                    near_vector.clone(),
+                    VectorStyle::default().set_color("yellow"),
+                ),
+            ],
+            "tmp",
+            module_path!(),
+            "tests",
         );
 
-        let mut rects: Vec<Rectangle> = vec![];
-
-        // проведение треугольников к полю зрения
-        if scope_lines.len() == 1 {
-            let tri = Triangle::of([&scope_lines[0].a, &scope_lines[0].b, &next_vec]);
-            let mut rect = Rectangle::of([&start_tri, &tri]);
-            let v1 = start_tri.get_circle();
-            if (*next_vec - *v1.center).radius() < v1.radius() {
-                rect.reverse_tries();
-            }
-            rects.push(rect);
-        } else if scope_lines.len() > 1 {
-            let tri = Triangle::of([&scope_lines[0].a, &scope_lines[0].b, &next_vec]);
-            let rect = Rectangle::of([&start_tri, &tri]);
-            rects.push(rect);
-            let tri = Triangle::of([&scope_lines[1].a, &scope_lines[1].b, &next_vec]);
-            let rect = Rectangle::of([&start_tri, &tri]);
-            rects.push(rect);
-        }
-        rects
+        vec![]
     }
-
-    fn get_scope_lines(lines: Vec<Rc<Line>>, next_vec: &Rc<Vector>) -> Vec<Rc<Line>> {
-        let vecs = lines
+}
+impl<T, const N: usize> Find<Vec<LineType<T, N>>, VectorType<T, N>> for Vec<LineType<T, N>> {
+    fn find(&self, vector: &VectorType<T, N>) -> Vec<LineType<T, N>> {
+        self.clone()
             .into_iter()
-            .map(|line| line.a.clone())
-            .collect::<Vec<Rc<Vector>>>();
-
-        let (center_ind, neares_vector) = {
-            let neares_vector = vecs.nearest(next_vec);
-            (
-                vecs.clone()
-                    .into_iter()
-                    .position(|vector| vector == neares_vector)
-                    .unwrap(),
-                neares_vector,
-            )
-        };
-
-        let [right, left] = {
-            let maybe_right = vecs[center_ind + 1].clone();
-            let angle = Angle::of([&next_vec, &neares_vector, &maybe_right]).get_polar_angle();
-            if angle > 0.0 {
-                [1_isize, -1]
-            } else {
-                [1, -1]
-            }
-        };
-
-        let get_polar_angle = |center: &Rc<Vector>, right: &Rc<Vector>| {
-            Angle::of([next_vec, center, right]).get_polar_angle()
-        };
-
-        let mut scope_vecs = vec![];
-        for i in 0..vecs.len() - 1 {
-            let len = vecs.len() as isize;
-            let next_ind = (i as isize * left + center_ind as isize + len) % len;
-            let next_id = (next_ind + left + len) % len;
-            let [next_ind, next_id] = [next_ind as usize, next_id as usize];
-
-            let angle = get_polar_angle(&vecs[next_ind], &vecs[next_id]);
-
-            if angle < 0.0 {
-                scope_vecs.push(vecs[next_id].clone());
-            } else {
-                break;
-            }
-        }
-        scope_vecs.reverse();
-        scope_vecs.push(neares_vector.clone());
-
-        for i in 0..vecs.len() - 1 {
-            let len = vecs.len() as isize;
-            let next_ind = (i as isize * right + center_ind as isize + len) % len;
-            let next_id = (next_ind + right + len) % len;
-            let [next_ind, next_id] = [next_ind as usize, next_id as usize];
-
-            let angle = get_polar_angle(&vecs[next_ind], &vecs[next_id]);
-            if angle > 0.0 {
-                scope_vecs.push(vecs[next_id].clone());
-            } else {
-                break;
-            }
-        }
-
-        scope_vecs.to()
+            .filter(|line| line.has(vector))
+            .collect()
     }
 }
+// impl<T: Number, const N: usize> Nearest<VectorType<T, N>, LineType<T, N>> for Vec<LineType<T, N>> {
+//     fn nearest(&self, vector: &VectorType<T, N>) -> LineType<T, N> {
+//         self.clone()
+//             .into_iter()
+//             .min_by(|a, b| {
+//                 a.0
 
-impl PointDistribution {
-    fn get_next_point(vector: &Rc<Vector>, rects: &mut Vec<Rectangle>) {
-        let scope_lines = {
-            let vecs = rects
-                .clone()
-                .into_iter()
-                .map(|rect| rect.to::<[Rc<Vector>; 4]>())
-                .flatten()
-                .collect::<Vec<Rc<Vector>>>();
-            Self::get_scope_lines(PointDistribution::of(vecs).convex_hull(), &vector)
-        };
-
-        
-
-        scope_lines.iter().for_each(|boundary_line| {
-            let find_tri = (*rects).search::<Vec<Rc<Triangle>>>(boundary_line)[0].clone();
-
-            // fn recursive(rects: &Vec<Rectangle>, find_tri: &Rc<Triangle>, line: &Rc<Line>) {
-            //     let any_lines = any_lines(find_tri, line);
-
-            //     any_lines.map(|line| recursive(rects, &find_triangle(rects, &line), &line));
-            // }
-
-            let mut rect = Rectangle::of([
-                &find_tri,
-                &Rc::new(Triangle::of([&boundary_line.a, &boundary_line.b, &vector])),
-            ]);
-
-            let circle = find_tri.get_circle();
-            if (**vector - *circle.center).radius() < circle.radius() {
-                find_tri
-                    .alien::<[Rc<Line>; 2]>(&boundary_line)
-                    .map(|line| {
-                        if let Some(rect) = rects
-                            .into_iter()
-                            .find(|rect| line.eq(&rect.get_common_line()))
-                        {
-                            let triangle = (*rect).alien::<Rc<Triangle>>(&find_tri);
-                            *rect = Rectangle::of([
-                                &triangle,
-                                &Rc::new(Triangle::of([&line.a, &line.b, &vector])),
-                            ]);
-                        }
-                    });
-            }
-            rect.set_delone();
-            rects.push(rect);
-        });
-    }
-}
+//                 a.partial_cmp(&b).unwrap()
+//             })
+//             .unwrap()
+//     }
+// }
